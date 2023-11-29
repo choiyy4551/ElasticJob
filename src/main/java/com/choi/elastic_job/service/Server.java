@@ -1,4 +1,5 @@
 package com.choi.elastic_job.service;
+import com.choi.elastic_job.pojo.Configuration;
 import com.choi.elastic_job.pojo.JobInfo;
 import com.choi.elastic_job.proto.JobProto;
 import com.choi.elastic_job.proto.ServiceGrpc;
@@ -12,16 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
-import javax.annotation.Resource;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@Service
+@Component
 public class Server extends ServiceGrpc.ServiceImplBase {
+    private Configuration configuration;
     @Autowired
     private RedissonClient redissonClient;
     @Autowired
@@ -31,18 +31,17 @@ public class Server extends ServiceGrpc.ServiceImplBase {
     @Autowired
     private JobUtil jobUtil;
     private Client client;
-    private final int PORT = 4551;
     private boolean own_lock;
     private boolean is_leader=false;
     private RLock lock;
     private io.grpc.Server server;
-    private String cluster_name;
     private fetchLockThread fetchLockThread;
     private JobHandler jobHandler;
 
 
-    public void modelChoose(){
-        lock=redissonClient.getLock(cluster_name);
+    public void modelChoose(Configuration configuration){
+        this.configuration=configuration;
+        lock=redissonClient.getLock(configuration.getClustername());
         //首次启动只会选择模式不会改变模式
         try {
             own_lock=lock.tryLock(1,10, TimeUnit.SECONDS);
@@ -50,7 +49,7 @@ public class Server extends ServiceGrpc.ServiceImplBase {
             throw new RuntimeException(e);
         }
         if(own_lock){
-            leaderStart(getIP());
+            leaderStart(configuration.getHostIp());
         }else{
             slaveStart();
         }
@@ -61,7 +60,7 @@ public class Server extends ServiceGrpc.ServiceImplBase {
         is_leader=true;
         try {
             //发布服务
-            server = ServerBuilder.forPort(PORT).addService(new GrpcMethods()).build().start();
+            server = ServerBuilder.forPort(configuration.getHostPort()).addService(new GrpcMethods()).build().start();
         } catch (Exception e) {
             log.warn("service error");
             e.printStackTrace();
@@ -88,14 +87,16 @@ public class Server extends ServiceGrpc.ServiceImplBase {
     public void slaveStop(){
         client.stop();
     }
-    public void addJob(JobInfo jobInfo){
+    public String addJob(JobInfo jobInfo){
         if(own_lock) {
             leaderService.addJob(jobInfo);
+            return "success";
         }else{
             log.warn("You are not a leader!");
+            return "error";
         }
     }
-    public void deleteJob(String  id){
+    public void deleteJob(String id){
         if(own_lock) {
             leaderService.deleteJob(id);
         }else {
@@ -103,15 +104,6 @@ public class Server extends ServiceGrpc.ServiceImplBase {
         }
     }
 
-    public String getIP(){
-        String hostAddress = null;
-        try {
-            hostAddress = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        return hostAddress;
-    }
     private class GrpcMethods extends ServiceGrpc.ServiceImplBase{
         @Override
         public void getJobs(JobProto.ClientInfo request, StreamObserver<JobProto.JobInfoReply> responseObserver) {
@@ -179,7 +171,7 @@ public class Server extends ServiceGrpc.ServiceImplBase {
                 try {
                     own_lock=lock.tryLock(1,10,TimeUnit.SECONDS);
                     if(own_lock){
-                        String local_ip=getIP();
+                        String local_ip=configuration.getHostIp();
                         if(jedis.get("leader").equals(local_ip)){
                             //leader中存储的ip和本地ip相同，说明重复获得锁
                             log.info("still as a leader!");
