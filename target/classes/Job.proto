@@ -1,0 +1,39 @@
+syntax="proto3";
+
+option java_multiple_files = false;
+option java_package="com.choi.elastic_job.proto";
+option java_outer_classname="JobProto";
+
+message ClientInfo{
+    string io_resources=1;
+    string storage_resource=2;
+    string cpu_source=3;
+}
+
+message JobInfoReply{
+  string id=1;
+  string name=2;
+  string category=3;
+  string param=4;
+  ErrorCode err_code=5;
+}
+message JobResultResponse{
+  string id=1;
+  string status=2;
+  string result=3;
+  ErrorCode err_code=4;
+}
+message SendJobResultRequest{
+  string id=1;
+}
+
+message ErrorCode{
+  string code=1;
+  string message=2;
+}
+
+service Service{
+  rpc getJobs(ClientInfo) returns (JobInfoReply){}
+  rpc sendJobResult(SendJobResultRequest) returns(JobResultResponse){}
+
+}
