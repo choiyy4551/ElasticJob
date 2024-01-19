@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Configuration {
-    private String clustername;
-    private String hostIp;
-    private Integer hostPort;
+    private String clustername;   //集群名称
+    private String hostIp;  //输入本地ip
+    private Integer hostPort;   //端口号默认4551
 }

@@ -6,6 +6,7 @@ import com.choi.elastic_job.proto.ServiceGrpc;
 import com.choi.elastic_job.proto.JobProto.JobResultResponse;
 import com.choi.elastic_job.proto.JobProto.ErrorCode;
 import com.choi.elastic_job.proto.JobProto.JobInfoReply;
+import com.choi.elastic_job.utils.JedisUtils;
 import com.choi.elastic_job.utils.JobUtil;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
@@ -25,14 +26,15 @@ public class Server extends ServiceGrpc.ServiceImplBase {
     @Autowired
     private RedissonClient redissonClient;
     @Autowired
-    private Jedis jedis;
+    private JedisUtils jedisUtils;
     @Autowired
     private LeaderService leaderService;
     @Autowired
     private JobUtil jobUtil;
+    @Autowired
     private Client client;
     private boolean own_lock;
-    private boolean is_leader=false;
+    private boolean is_leader = false;
     private RLock lock;
     private io.grpc.Server server;
     private fetchLockThread fetchLockThread;
@@ -45,18 +47,21 @@ public class Server extends ServiceGrpc.ServiceImplBase {
         //首次启动只会选择模式不会改变模式
         try {
             own_lock=lock.tryLock(1,10, TimeUnit.SECONDS);
+            if(own_lock){
+                leaderStart(configuration.getHostIp());
+            }else{
+                slaveStart();
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        if(own_lock){
-            leaderStart(configuration.getHostIp());
-        }else{
-            slaveStart();
-        }
+        //客户端或服务器端启动时就启动线程重复拉取集群锁
+        fetchLockThread = new fetchLockThread();
+        new Thread(fetchLockThread).start();
     }
     public void leaderStart(String ip)  {
         //所有人通信端口号默认4551，就不在redis中存入
-        jedis.set("leader",ip);
+        jedisUtils.set("leader",ip);
         is_leader=true;
         try {
             //发布服务
@@ -69,9 +74,6 @@ public class Server extends ServiceGrpc.ServiceImplBase {
         jobHandler = new JobHandler();
         jobHandler.setJudge(is_leader);
         new Thread(jobHandler).start();
-        //利用线程重复拉取集群锁
-        fetchLockThread = new fetchLockThread();
-        new Thread(fetchLockThread).start();
         log.info("start as a leader, ip:"+ip);
     }
     public void leaderStop(){
@@ -80,9 +82,6 @@ public class Server extends ServiceGrpc.ServiceImplBase {
     }
     public void slaveStart(){
         client.start();
-        //利用线程重复拉取集群锁
-        fetchLockThread = new fetchLockThread();
-        new Thread(fetchLockThread).start();
     }
     public void slaveStop(){
         client.stop();
@@ -96,14 +95,6 @@ public class Server extends ServiceGrpc.ServiceImplBase {
             return "error";
         }
     }
-    public void deleteJob(String id){
-        if(own_lock) {
-            leaderService.deleteJob(id);
-        }else {
-            log.warn("You are not a leader!");
-        }
-    }
-
     private class GrpcMethods extends ServiceGrpc.ServiceImplBase{
         @Override
         public void getJobs(JobProto.ClientInfo request, StreamObserver<JobProto.JobInfoReply> responseObserver) {
@@ -164,6 +155,7 @@ public class Server extends ServiceGrpc.ServiceImplBase {
             }
         }
     }
+    //开启线程反复获取锁
     class fetchLockThread implements Runnable{
         @Override
         public void run() {
@@ -172,7 +164,7 @@ public class Server extends ServiceGrpc.ServiceImplBase {
                     own_lock=lock.tryLock(1,10,TimeUnit.SECONDS);
                     if(own_lock){
                         String local_ip=configuration.getHostIp();
-                        if(jedis.get("leader").equals(local_ip)){
+                        if(jedisUtils.get("leader").equals(local_ip)){
                             //leader中存储的ip和本地ip相同，说明重复获得锁
                             log.info("still as a leader!");
                         }else{

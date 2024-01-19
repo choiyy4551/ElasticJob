@@ -2,6 +2,7 @@ package com.choi.elastic_job.service;
 
 import com.choi.elastic_job.pojo.ClientInfo;
 import com.choi.elastic_job.pojo.JobInfo;
+import com.choi.elastic_job.utils.JedisUtils;
 import io.grpc.StatusRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import com.choi.elastic_job.proto.ServiceGrpc;
 @Slf4j
 public class Client{
     @Autowired
-    private Jedis jedis;
+    private JedisUtils jedisUtils;
     @Autowired
     private ClientInfo clientInfo;
     @Autowired
@@ -60,7 +61,7 @@ public class Client{
         JobProto.SendJobResultRequest request=JobProto.SendJobResultRequest.newBuilder().setId(job_id).build();
         JobProto.JobResultResponse response;
         try{
-            response= stub.sendJobResult(request);
+            response = stub.sendJobResult(request);
         }catch (StatusRuntimeException e){
             System.out.println("WARING, RPC failed: Status="+e.getStatus());
             throw e;
@@ -70,7 +71,7 @@ public class Client{
        @Override
        public void run() {
            while(!shutdown&&!is_slave) {
-               String leader_ip = jedis.get("leader");
+               String leader_ip = jedisUtils.get("leader");
                log.info("leader is" + leader_ip);
                stub=clientStub.getBlockingStub(leader_ip);
                if(shutdown){

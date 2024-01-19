@@ -6,13 +6,14 @@ spring:
     host: 127.0.0.1
     port: 6379
     password: 123456
+    database: 0
+    timeout: 10000
     jedis:
       pool:
         max-active: 8
-        max-wait: -1ms
+        max-wait: -1
         max-idle: 8
         min-idle: 0
-    timeout: 10000ms
   datasource:
     username: root
     password: 123456
