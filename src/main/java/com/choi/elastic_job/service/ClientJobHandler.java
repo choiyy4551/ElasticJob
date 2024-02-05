@@ -1,5 +1,6 @@
 package com.choi.elastic_job.service;
 
+import com.choi.elastic_job.mapper.LeaderService;
 import com.choi.elastic_job.pojo.ClientInfo;
 import com.choi.elastic_job.pojo.JobInfo;
 import lombok.extern.slf4j.Slf4j;

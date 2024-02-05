@@ -12,7 +12,7 @@ public class JedisUtils {
     @Autowired
     private JedisPool jedisPool;
 
-    private Jedis jedis = null;
+    private Jedis jedis;
 
     /**
      * 获取一个Jedis实例

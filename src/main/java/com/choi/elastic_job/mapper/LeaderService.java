@@ -1,4 +1,4 @@
-package com.choi.elastic_job.service;
+package com.choi.elastic_job.mapper;
 
 
 import com.choi.elastic_job.pojo.JobCompareParam;

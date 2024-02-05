@@ -1,7 +1,7 @@
 package com.choi.elastic_job.controller;
 
 import com.choi.elastic_job.pojo.JobInfo;
-import com.choi.elastic_job.service.LeaderService;
+import com.choi.elastic_job.mapper.LeaderService;
 import com.choi.elastic_job.service.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;

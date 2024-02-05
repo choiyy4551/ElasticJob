@@ -1,5 +1,6 @@
 package com.choi.elastic_job.service;
 
+import com.choi.elastic_job.mapper.LeaderService;
 import com.choi.elastic_job.pojo.JobCompareParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

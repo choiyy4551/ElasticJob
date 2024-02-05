@@ -1,4 +1,5 @@
 package com.choi.elastic_job.service;
+import com.choi.elastic_job.mapper.LeaderService;
 import com.choi.elastic_job.pojo.Configuration;
 import com.choi.elastic_job.pojo.JobInfo;
 import com.choi.elastic_job.proto.JobProto;
@@ -15,7 +16,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
 
 import java.util.concurrent.TimeUnit;
 
