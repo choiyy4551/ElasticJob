@@ -25,7 +25,6 @@ public class JobMapper {
             jobInfo.setParam(map.get("param"));
             jobInfo.setScheduleParam(map.get("scheduleParam"));
             jobInfo.setPriority(Integer.parseInt(map.get("priority")));
-            // jobInfo.setClientInterface();
             return server.addJob(jobInfo);
         }
         @RequestMapping("/GetAllJob")

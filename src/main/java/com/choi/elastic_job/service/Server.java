@@ -103,7 +103,7 @@ public class Server extends ServiceGrpc.ServiceImplBase {
             ErrorCode errorCode;
             JobProto.JobList jobList;
             int Resources = Integer.parseInt(request.getResources());
-            if(!jobHandler.judgeResource(Resources)){
+            if (!jobHandler.judgeResource(Resources)) {
                 errorCode = ErrorCode.newBuilder().setCode("error").setMessage("dont have enough resource").build();
                 jobList = JobProto.JobList.newBuilder().setErrCode(errorCode).build();
                 responseObserver.onNext(jobList);
@@ -135,15 +135,12 @@ public class Server extends ServiceGrpc.ServiceImplBase {
             if (result.equals("done success")) {
                 leaderService.deleteJob(id);
                 errorCode = ErrorCode.newBuilder().setCode("success").setMessage("job:" + id + "has done successfully").build();
-                jobResultResponse = JobResultResponse.newBuilder().setErrCode(errorCode).build();
-                responseObserver.onNext(jobResultResponse);
-                responseObserver.onCompleted();
             } else {
                 errorCode = ErrorCode.newBuilder().setCode("error").setMessage("job:" + id + "running wrong").build();
-                jobResultResponse = JobResultResponse.newBuilder().setErrCode(errorCode).build();
-                responseObserver.onNext(jobResultResponse);
-                responseObserver.onCompleted();
             }
+            jobResultResponse = JobResultResponse.newBuilder().setErrCode(errorCode).build();
+            responseObserver.onNext(jobResultResponse);
+            responseObserver.onCompleted();
         }
     }
 
