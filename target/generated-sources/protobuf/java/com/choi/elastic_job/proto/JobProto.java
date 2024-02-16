@@ -19,34 +19,14 @@ public final class JobProto {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>string io_resources = 1;</code>
+     * <code>string resources = 1;</code>
      */
-    java.lang.String getIoResources();
+    java.lang.String getResources();
     /**
-     * <code>string io_resources = 1;</code>
+     * <code>string resources = 1;</code>
      */
     com.google.protobuf.ByteString
-        getIoResourcesBytes();
-
-    /**
-     * <code>string storage_resource = 2;</code>
-     */
-    java.lang.String getStorageResource();
-    /**
-     * <code>string storage_resource = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getStorageResourceBytes();
-
-    /**
-     * <code>string cpu_source = 3;</code>
-     */
-    java.lang.String getCpuSource();
-    /**
-     * <code>string cpu_source = 3;</code>
-     */
-    com.google.protobuf.ByteString
-        getCpuSourceBytes();
+        getResourcesBytes();
   }
   /**
    * Protobuf type {@code ClientInfo}
@@ -61,9 +41,7 @@ public final class JobProto {
       super(builder);
     }
     private ClientInfo() {
-      ioResources_ = "";
-      storageResource_ = "";
-      cpuSource_ = "";
+      resources_ = "";
     }
 
     @java.lang.Override
@@ -100,19 +78,7 @@ public final class JobProto {
             case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
-              ioResources_ = s;
-              break;
-            }
-            case 18: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              storageResource_ = s;
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              cpuSource_ = s;
+              resources_ = s;
               break;
             }
           }
@@ -139,102 +105,34 @@ public final class JobProto {
               com.choi.elastic_job.proto.JobProto.ClientInfo.class, com.choi.elastic_job.proto.JobProto.ClientInfo.Builder.class);
     }
 
-    public static final int IO_RESOURCES_FIELD_NUMBER = 1;
-    private volatile java.lang.Object ioResources_;
+    public static final int RESOURCES_FIELD_NUMBER = 1;
+    private volatile java.lang.Object resources_;
     /**
-     * <code>string io_resources = 1;</code>
+     * <code>string resources = 1;</code>
      */
-    public java.lang.String getIoResources() {
-      java.lang.Object ref = ioResources_;
+    public java.lang.String getResources() {
+      java.lang.Object ref = resources_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        ioResources_ = s;
+        resources_ = s;
         return s;
       }
     }
     /**
-     * <code>string io_resources = 1;</code>
+     * <code>string resources = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getIoResourcesBytes() {
-      java.lang.Object ref = ioResources_;
+        getResourcesBytes() {
+      java.lang.Object ref = resources_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        ioResources_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int STORAGE_RESOURCE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object storageResource_;
-    /**
-     * <code>string storage_resource = 2;</code>
-     */
-    public java.lang.String getStorageResource() {
-      java.lang.Object ref = storageResource_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        storageResource_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string storage_resource = 2;</code>
-     */
-    public com.google.protobuf.ByteString
-        getStorageResourceBytes() {
-      java.lang.Object ref = storageResource_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        storageResource_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-
-    public static final int CPU_SOURCE_FIELD_NUMBER = 3;
-    private volatile java.lang.Object cpuSource_;
-    /**
-     * <code>string cpu_source = 3;</code>
-     */
-    public java.lang.String getCpuSource() {
-      java.lang.Object ref = cpuSource_;
-      if (ref instanceof java.lang.String) {
-        return (java.lang.String) ref;
-      } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        cpuSource_ = s;
-        return s;
-      }
-    }
-    /**
-     * <code>string cpu_source = 3;</code>
-     */
-    public com.google.protobuf.ByteString
-        getCpuSourceBytes() {
-      java.lang.Object ref = cpuSource_;
-      if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        cpuSource_ = b;
+        resources_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -253,14 +151,8 @@ public final class JobProto {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getIoResourcesBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, ioResources_);
-      }
-      if (!getStorageResourceBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, storageResource_);
-      }
-      if (!getCpuSourceBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, cpuSource_);
+      if (!getResourcesBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, resources_);
       }
       unknownFields.writeTo(output);
     }
@@ -270,14 +162,8 @@ public final class JobProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getIoResourcesBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, ioResources_);
-      }
-      if (!getStorageResourceBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, storageResource_);
-      }
-      if (!getCpuSourceBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, cpuSource_);
+      if (!getResourcesBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, resources_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -295,12 +181,8 @@ public final class JobProto {
       com.choi.elastic_job.proto.JobProto.ClientInfo other = (com.choi.elastic_job.proto.JobProto.ClientInfo) obj;
 
       boolean result = true;
-      result = result && getIoResources()
-          .equals(other.getIoResources());
-      result = result && getStorageResource()
-          .equals(other.getStorageResource());
-      result = result && getCpuSource()
-          .equals(other.getCpuSource());
+      result = result && getResources()
+          .equals(other.getResources());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -312,12 +194,8 @@ public final class JobProto {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + IO_RESOURCES_FIELD_NUMBER;
-      hash = (53 * hash) + getIoResources().hashCode();
-      hash = (37 * hash) + STORAGE_RESOURCE_FIELD_NUMBER;
-      hash = (53 * hash) + getStorageResource().hashCode();
-      hash = (37 * hash) + CPU_SOURCE_FIELD_NUMBER;
-      hash = (53 * hash) + getCpuSource().hashCode();
+      hash = (37 * hash) + RESOURCES_FIELD_NUMBER;
+      hash = (53 * hash) + getResources().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -447,11 +325,7 @@ public final class JobProto {
       }
       public Builder clear() {
         super.clear();
-        ioResources_ = "";
-
-        storageResource_ = "";
-
-        cpuSource_ = "";
+        resources_ = "";
 
         return this;
       }
@@ -475,9 +349,7 @@ public final class JobProto {
 
       public com.choi.elastic_job.proto.JobProto.ClientInfo buildPartial() {
         com.choi.elastic_job.proto.JobProto.ClientInfo result = new com.choi.elastic_job.proto.JobProto.ClientInfo(this);
-        result.ioResources_ = ioResources_;
-        result.storageResource_ = storageResource_;
-        result.cpuSource_ = cpuSource_;
+        result.resources_ = resources_;
         onBuilt();
         return result;
       }
@@ -519,16 +391,8 @@ public final class JobProto {
 
       public Builder mergeFrom(com.choi.elastic_job.proto.JobProto.ClientInfo other) {
         if (other == com.choi.elastic_job.proto.JobProto.ClientInfo.getDefaultInstance()) return this;
-        if (!other.getIoResources().isEmpty()) {
-          ioResources_ = other.ioResources_;
-          onChanged();
-        }
-        if (!other.getStorageResource().isEmpty()) {
-          storageResource_ = other.storageResource_;
-          onChanged();
-        }
-        if (!other.getCpuSource().isEmpty()) {
-          cpuSource_ = other.cpuSource_;
+        if (!other.getResources().isEmpty()) {
+          resources_ = other.resources_;
           onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
@@ -558,209 +422,71 @@ public final class JobProto {
         return this;
       }
 
-      private java.lang.Object ioResources_ = "";
+      private java.lang.Object resources_ = "";
       /**
-       * <code>string io_resources = 1;</code>
+       * <code>string resources = 1;</code>
        */
-      public java.lang.String getIoResources() {
-        java.lang.Object ref = ioResources_;
+      public java.lang.String getResources() {
+        java.lang.Object ref = resources_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
-          ioResources_ = s;
+          resources_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>string io_resources = 1;</code>
+       * <code>string resources = 1;</code>
        */
       public com.google.protobuf.ByteString
-          getIoResourcesBytes() {
-        java.lang.Object ref = ioResources_;
+          getResourcesBytes() {
+        java.lang.Object ref = resources_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          ioResources_ = b;
+          resources_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>string io_resources = 1;</code>
+       * <code>string resources = 1;</code>
        */
-      public Builder setIoResources(
+      public Builder setResources(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
   
-        ioResources_ = value;
+        resources_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>string io_resources = 1;</code>
+       * <code>string resources = 1;</code>
        */
-      public Builder clearIoResources() {
+      public Builder clearResources() {
         
-        ioResources_ = getDefaultInstance().getIoResources();
+        resources_ = getDefaultInstance().getResources();
         onChanged();
         return this;
       }
       /**
-       * <code>string io_resources = 1;</code>
+       * <code>string resources = 1;</code>
        */
-      public Builder setIoResourcesBytes(
+      public Builder setResourcesBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
         
-        ioResources_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object storageResource_ = "";
-      /**
-       * <code>string storage_resource = 2;</code>
-       */
-      public java.lang.String getStorageResource() {
-        java.lang.Object ref = storageResource_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          storageResource_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string storage_resource = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getStorageResourceBytes() {
-        java.lang.Object ref = storageResource_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          storageResource_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string storage_resource = 2;</code>
-       */
-      public Builder setStorageResource(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        storageResource_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string storage_resource = 2;</code>
-       */
-      public Builder clearStorageResource() {
-        
-        storageResource_ = getDefaultInstance().getStorageResource();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string storage_resource = 2;</code>
-       */
-      public Builder setStorageResourceBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        storageResource_ = value;
-        onChanged();
-        return this;
-      }
-
-      private java.lang.Object cpuSource_ = "";
-      /**
-       * <code>string cpu_source = 3;</code>
-       */
-      public java.lang.String getCpuSource() {
-        java.lang.Object ref = cpuSource_;
-        if (!(ref instanceof java.lang.String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          java.lang.String s = bs.toStringUtf8();
-          cpuSource_ = s;
-          return s;
-        } else {
-          return (java.lang.String) ref;
-        }
-      }
-      /**
-       * <code>string cpu_source = 3;</code>
-       */
-      public com.google.protobuf.ByteString
-          getCpuSourceBytes() {
-        java.lang.Object ref = cpuSource_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
-          cpuSource_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>string cpu_source = 3;</code>
-       */
-      public Builder setCpuSource(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
-        cpuSource_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string cpu_source = 3;</code>
-       */
-      public Builder clearCpuSource() {
-        
-        cpuSource_ = getDefaultInstance().getCpuSource();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>string cpu_source = 3;</code>
-       */
-      public Builder setCpuSourceBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
-        cpuSource_ = value;
+        resources_ = value;
         onChanged();
         return this;
       }
@@ -813,8 +539,8 @@ public final class JobProto {
 
   }
 
-  public interface JobInfoReplyOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:JobInfoReply)
+  public interface JobInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:JobInfo)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -871,18 +597,18 @@ public final class JobProto {
     com.choi.elastic_job.proto.JobProto.ErrorCodeOrBuilder getErrCodeOrBuilder();
   }
   /**
-   * Protobuf type {@code JobInfoReply}
+   * Protobuf type {@code JobInfo}
    */
-  public  static final class JobInfoReply extends
+  public  static final class JobInfo extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:JobInfoReply)
-      JobInfoReplyOrBuilder {
+      // @@protoc_insertion_point(message_implements:JobInfo)
+      JobInfoOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use JobInfoReply.newBuilder() to construct.
-    private JobInfoReply(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use JobInfo.newBuilder() to construct.
+    private JobInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private JobInfoReply() {
+    private JobInfo() {
       id_ = "";
       name_ = "";
       category_ = "";
@@ -894,7 +620,7 @@ public final class JobProto {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private JobInfoReply(
+    private JobInfo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -971,14 +697,14 @@ public final class JobProto {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.choi.elastic_job.proto.JobProto.internal_static_JobInfoReply_descriptor;
+      return com.choi.elastic_job.proto.JobProto.internal_static_JobInfo_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.choi.elastic_job.proto.JobProto.internal_static_JobInfoReply_fieldAccessorTable
+      return com.choi.elastic_job.proto.JobProto.internal_static_JobInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.choi.elastic_job.proto.JobProto.JobInfoReply.class, com.choi.elastic_job.proto.JobProto.JobInfoReply.Builder.class);
+              com.choi.elastic_job.proto.JobProto.JobInfo.class, com.choi.elastic_job.proto.JobProto.JobInfo.Builder.class);
     }
 
     public static final int ID_FIELD_NUMBER = 1;
@@ -1199,10 +925,10 @@ public final class JobProto {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.choi.elastic_job.proto.JobProto.JobInfoReply)) {
+      if (!(obj instanceof com.choi.elastic_job.proto.JobProto.JobInfo)) {
         return super.equals(obj);
       }
-      com.choi.elastic_job.proto.JobProto.JobInfoReply other = (com.choi.elastic_job.proto.JobProto.JobInfoReply) obj;
+      com.choi.elastic_job.proto.JobProto.JobInfo other = (com.choi.elastic_job.proto.JobProto.JobInfo) obj;
 
       boolean result = true;
       result = result && getId()
@@ -1246,69 +972,69 @@ public final class JobProto {
       return hash;
     }
 
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(byte[] data)
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(java.io.InputStream input)
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseDelimitedFrom(java.io.InputStream input)
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseDelimitedFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply parseFrom(
+    public static com.choi.elastic_job.proto.JobProto.JobInfo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1320,7 +1046,7 @@ public final class JobProto {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.choi.elastic_job.proto.JobProto.JobInfoReply prototype) {
+    public static Builder newBuilder(com.choi.elastic_job.proto.JobProto.JobInfo prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() {
@@ -1335,25 +1061,25 @@ public final class JobProto {
       return builder;
     }
     /**
-     * Protobuf type {@code JobInfoReply}
+     * Protobuf type {@code JobInfo}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:JobInfoReply)
-        com.choi.elastic_job.proto.JobProto.JobInfoReplyOrBuilder {
+        // @@protoc_insertion_point(builder_implements:JobInfo)
+        com.choi.elastic_job.proto.JobProto.JobInfoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.choi.elastic_job.proto.JobProto.internal_static_JobInfoReply_descriptor;
+        return com.choi.elastic_job.proto.JobProto.internal_static_JobInfo_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.choi.elastic_job.proto.JobProto.internal_static_JobInfoReply_fieldAccessorTable
+        return com.choi.elastic_job.proto.JobProto.internal_static_JobInfo_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.choi.elastic_job.proto.JobProto.JobInfoReply.class, com.choi.elastic_job.proto.JobProto.JobInfoReply.Builder.class);
+                com.choi.elastic_job.proto.JobProto.JobInfo.class, com.choi.elastic_job.proto.JobProto.JobInfo.Builder.class);
       }
 
-      // Construct using com.choi.elastic_job.proto.JobProto.JobInfoReply.newBuilder()
+      // Construct using com.choi.elastic_job.proto.JobProto.JobInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1389,23 +1115,23 @@ public final class JobProto {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.choi.elastic_job.proto.JobProto.internal_static_JobInfoReply_descriptor;
+        return com.choi.elastic_job.proto.JobProto.internal_static_JobInfo_descriptor;
       }
 
-      public com.choi.elastic_job.proto.JobProto.JobInfoReply getDefaultInstanceForType() {
-        return com.choi.elastic_job.proto.JobProto.JobInfoReply.getDefaultInstance();
+      public com.choi.elastic_job.proto.JobProto.JobInfo getDefaultInstanceForType() {
+        return com.choi.elastic_job.proto.JobProto.JobInfo.getDefaultInstance();
       }
 
-      public com.choi.elastic_job.proto.JobProto.JobInfoReply build() {
-        com.choi.elastic_job.proto.JobProto.JobInfoReply result = buildPartial();
+      public com.choi.elastic_job.proto.JobProto.JobInfo build() {
+        com.choi.elastic_job.proto.JobProto.JobInfo result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public com.choi.elastic_job.proto.JobProto.JobInfoReply buildPartial() {
-        com.choi.elastic_job.proto.JobProto.JobInfoReply result = new com.choi.elastic_job.proto.JobProto.JobInfoReply(this);
+      public com.choi.elastic_job.proto.JobProto.JobInfo buildPartial() {
+        com.choi.elastic_job.proto.JobProto.JobInfo result = new com.choi.elastic_job.proto.JobProto.JobInfo(this);
         result.id_ = id_;
         result.name_ = name_;
         result.category_ = category_;
@@ -1446,16 +1172,16 @@ public final class JobProto {
         return (Builder) super.addRepeatedField(field, value);
       }
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.choi.elastic_job.proto.JobProto.JobInfoReply) {
-          return mergeFrom((com.choi.elastic_job.proto.JobProto.JobInfoReply)other);
+        if (other instanceof com.choi.elastic_job.proto.JobProto.JobInfo) {
+          return mergeFrom((com.choi.elastic_job.proto.JobProto.JobInfo)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.choi.elastic_job.proto.JobProto.JobInfoReply other) {
-        if (other == com.choi.elastic_job.proto.JobProto.JobInfoReply.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.choi.elastic_job.proto.JobProto.JobInfo other) {
+        if (other == com.choi.elastic_job.proto.JobProto.JobInfo.getDefaultInstance()) return this;
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
           onChanged();
@@ -1488,11 +1214,11 @@ public final class JobProto {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.choi.elastic_job.proto.JobProto.JobInfoReply parsedMessage = null;
+        com.choi.elastic_job.proto.JobProto.JobInfo parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.choi.elastic_job.proto.JobProto.JobInfoReply) e.getUnfinishedMessage();
+          parsedMessage = (com.choi.elastic_job.proto.JobProto.JobInfo) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1905,39 +1631,815 @@ public final class JobProto {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:JobInfoReply)
+      // @@protoc_insertion_point(builder_scope:JobInfo)
     }
 
-    // @@protoc_insertion_point(class_scope:JobInfoReply)
-    private static final com.choi.elastic_job.proto.JobProto.JobInfoReply DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:JobInfo)
+    private static final com.choi.elastic_job.proto.JobProto.JobInfo DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.choi.elastic_job.proto.JobProto.JobInfoReply();
+      DEFAULT_INSTANCE = new com.choi.elastic_job.proto.JobProto.JobInfo();
     }
 
-    public static com.choi.elastic_job.proto.JobProto.JobInfoReply getDefaultInstance() {
+    public static com.choi.elastic_job.proto.JobProto.JobInfo getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<JobInfoReply>
-        PARSER = new com.google.protobuf.AbstractParser<JobInfoReply>() {
-      public JobInfoReply parsePartialFrom(
+    private static final com.google.protobuf.Parser<JobInfo>
+        PARSER = new com.google.protobuf.AbstractParser<JobInfo>() {
+      public JobInfo parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new JobInfoReply(input, extensionRegistry);
+        return new JobInfo(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<JobInfoReply> parser() {
+    public static com.google.protobuf.Parser<JobInfo> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<JobInfoReply> getParserForType() {
+    public com.google.protobuf.Parser<JobInfo> getParserForType() {
       return PARSER;
     }
 
-    public com.choi.elastic_job.proto.JobProto.JobInfoReply getDefaultInstanceForType() {
+    public com.choi.elastic_job.proto.JobProto.JobInfo getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface JobListOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:JobList)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    java.util.List<java.lang.String>
+        getArrayList();
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    int getArrayCount();
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    java.lang.String getArray(int index);
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    com.google.protobuf.ByteString
+        getArrayBytes(int index);
+
+    /**
+     * <code>.ErrorCode err_code = 2;</code>
+     */
+    boolean hasErrCode();
+    /**
+     * <code>.ErrorCode err_code = 2;</code>
+     */
+    com.choi.elastic_job.proto.JobProto.ErrorCode getErrCode();
+    /**
+     * <code>.ErrorCode err_code = 2;</code>
+     */
+    com.choi.elastic_job.proto.JobProto.ErrorCodeOrBuilder getErrCodeOrBuilder();
+  }
+  /**
+   * Protobuf type {@code JobList}
+   */
+  public  static final class JobList extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:JobList)
+      JobListOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use JobList.newBuilder() to construct.
+    private JobList(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private JobList() {
+      array_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private JobList(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            default: {
+              if (!parseUnknownFieldProto3(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+                array_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              array_.add(s);
+              break;
+            }
+            case 18: {
+              com.choi.elastic_job.proto.JobProto.ErrorCode.Builder subBuilder = null;
+              if (errCode_ != null) {
+                subBuilder = errCode_.toBuilder();
+              }
+              errCode_ = input.readMessage(com.choi.elastic_job.proto.JobProto.ErrorCode.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(errCode_);
+                errCode_ = subBuilder.buildPartial();
+              }
+
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
+          array_ = array_.getUnmodifiableView();
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.choi.elastic_job.proto.JobProto.internal_static_JobList_descriptor;
+    }
+
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.choi.elastic_job.proto.JobProto.internal_static_JobList_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.choi.elastic_job.proto.JobProto.JobList.class, com.choi.elastic_job.proto.JobProto.JobList.Builder.class);
+    }
+
+    private int bitField0_;
+    public static final int ARRAY_FIELD_NUMBER = 1;
+    private com.google.protobuf.LazyStringList array_;
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    public com.google.protobuf.ProtocolStringList
+        getArrayList() {
+      return array_;
+    }
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    public int getArrayCount() {
+      return array_.size();
+    }
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    public java.lang.String getArray(int index) {
+      return array_.get(index);
+    }
+    /**
+     * <code>repeated string array = 1;</code>
+     */
+    public com.google.protobuf.ByteString
+        getArrayBytes(int index) {
+      return array_.getByteString(index);
+    }
+
+    public static final int ERR_CODE_FIELD_NUMBER = 2;
+    private com.choi.elastic_job.proto.JobProto.ErrorCode errCode_;
+    /**
+     * <code>.ErrorCode err_code = 2;</code>
+     */
+    public boolean hasErrCode() {
+      return errCode_ != null;
+    }
+    /**
+     * <code>.ErrorCode err_code = 2;</code>
+     */
+    public com.choi.elastic_job.proto.JobProto.ErrorCode getErrCode() {
+      return errCode_ == null ? com.choi.elastic_job.proto.JobProto.ErrorCode.getDefaultInstance() : errCode_;
+    }
+    /**
+     * <code>.ErrorCode err_code = 2;</code>
+     */
+    public com.choi.elastic_job.proto.JobProto.ErrorCodeOrBuilder getErrCodeOrBuilder() {
+      return getErrCode();
+    }
+
+    private byte memoizedIsInitialized = -1;
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      for (int i = 0; i < array_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, array_.getRaw(i));
+      }
+      if (errCode_ != null) {
+        output.writeMessage(2, getErrCode());
+      }
+      unknownFields.writeTo(output);
+    }
+
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int i = 0; i < array_.size(); i++) {
+          dataSize += computeStringSizeNoTag(array_.getRaw(i));
+        }
+        size += dataSize;
+        size += 1 * getArrayList().size();
+      }
+      if (errCode_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, getErrCode());
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.choi.elastic_job.proto.JobProto.JobList)) {
+        return super.equals(obj);
+      }
+      com.choi.elastic_job.proto.JobProto.JobList other = (com.choi.elastic_job.proto.JobProto.JobList) obj;
+
+      boolean result = true;
+      result = result && getArrayList()
+          .equals(other.getArrayList());
+      result = result && (hasErrCode() == other.hasErrCode());
+      if (hasErrCode()) {
+        result = result && getErrCode()
+            .equals(other.getErrCode());
+      }
+      result = result && unknownFields.equals(other.unknownFields);
+      return result;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      if (getArrayCount() > 0) {
+        hash = (37 * hash) + ARRAY_FIELD_NUMBER;
+        hash = (53 * hash) + getArrayList().hashCode();
+      }
+      if (hasErrCode()) {
+        hash = (37 * hash) + ERR_CODE_FIELD_NUMBER;
+        hash = (53 * hash) + getErrCode().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.choi.elastic_job.proto.JobProto.JobList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.choi.elastic_job.proto.JobProto.JobList prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code JobList}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:JobList)
+        com.choi.elastic_job.proto.JobProto.JobListOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.choi.elastic_job.proto.JobProto.internal_static_JobList_descriptor;
+      }
+
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.choi.elastic_job.proto.JobProto.internal_static_JobList_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.choi.elastic_job.proto.JobProto.JobList.class, com.choi.elastic_job.proto.JobProto.JobList.Builder.class);
+      }
+
+      // Construct using com.choi.elastic_job.proto.JobProto.JobList.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+        }
+      }
+      public Builder clear() {
+        super.clear();
+        array_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        if (errCodeBuilder_ == null) {
+          errCode_ = null;
+        } else {
+          errCode_ = null;
+          errCodeBuilder_ = null;
+        }
+        return this;
+      }
+
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.choi.elastic_job.proto.JobProto.internal_static_JobList_descriptor;
+      }
+
+      public com.choi.elastic_job.proto.JobProto.JobList getDefaultInstanceForType() {
+        return com.choi.elastic_job.proto.JobProto.JobList.getDefaultInstance();
+      }
+
+      public com.choi.elastic_job.proto.JobProto.JobList build() {
+        com.choi.elastic_job.proto.JobProto.JobList result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      public com.choi.elastic_job.proto.JobProto.JobList buildPartial() {
+        com.choi.elastic_job.proto.JobProto.JobList result = new com.choi.elastic_job.proto.JobProto.JobList(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+          array_ = array_.getUnmodifiableView();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        }
+        result.array_ = array_;
+        if (errCodeBuilder_ == null) {
+          result.errCode_ = errCode_;
+        } else {
+          result.errCode_ = errCodeBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
+      }
+
+      public Builder clone() {
+        return (Builder) super.clone();
+      }
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.setField(field, value);
+      }
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return (Builder) super.clearField(field);
+      }
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return (Builder) super.clearOneof(oneof);
+      }
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return (Builder) super.setRepeatedField(field, index, value);
+      }
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return (Builder) super.addRepeatedField(field, value);
+      }
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.choi.elastic_job.proto.JobProto.JobList) {
+          return mergeFrom((com.choi.elastic_job.proto.JobProto.JobList)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.choi.elastic_job.proto.JobProto.JobList other) {
+        if (other == com.choi.elastic_job.proto.JobProto.JobList.getDefaultInstance()) return this;
+        if (!other.array_.isEmpty()) {
+          if (array_.isEmpty()) {
+            array_ = other.array_;
+            bitField0_ = (bitField0_ & ~0x00000001);
+          } else {
+            ensureArrayIsMutable();
+            array_.addAll(other.array_);
+          }
+          onChanged();
+        }
+        if (other.hasErrCode()) {
+          mergeErrCode(other.getErrCode());
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.choi.elastic_job.proto.JobProto.JobList parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.choi.elastic_job.proto.JobProto.JobList) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private com.google.protobuf.LazyStringList array_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureArrayIsMutable() {
+        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
+          array_ = new com.google.protobuf.LazyStringArrayList(array_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getArrayList() {
+        return array_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public int getArrayCount() {
+        return array_.size();
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public java.lang.String getArray(int index) {
+        return array_.get(index);
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public com.google.protobuf.ByteString
+          getArrayBytes(int index) {
+        return array_.getByteString(index);
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public Builder setArray(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureArrayIsMutable();
+        array_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public Builder addArray(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureArrayIsMutable();
+        array_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public Builder addAllArray(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureArrayIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, array_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public Builder clearArray() {
+        array_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string array = 1;</code>
+       */
+      public Builder addArrayBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureArrayIsMutable();
+        array_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private com.choi.elastic_job.proto.JobProto.ErrorCode errCode_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.choi.elastic_job.proto.JobProto.ErrorCode, com.choi.elastic_job.proto.JobProto.ErrorCode.Builder, com.choi.elastic_job.proto.JobProto.ErrorCodeOrBuilder> errCodeBuilder_;
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public boolean hasErrCode() {
+        return errCodeBuilder_ != null || errCode_ != null;
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public com.choi.elastic_job.proto.JobProto.ErrorCode getErrCode() {
+        if (errCodeBuilder_ == null) {
+          return errCode_ == null ? com.choi.elastic_job.proto.JobProto.ErrorCode.getDefaultInstance() : errCode_;
+        } else {
+          return errCodeBuilder_.getMessage();
+        }
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public Builder setErrCode(com.choi.elastic_job.proto.JobProto.ErrorCode value) {
+        if (errCodeBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          errCode_ = value;
+          onChanged();
+        } else {
+          errCodeBuilder_.setMessage(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public Builder setErrCode(
+          com.choi.elastic_job.proto.JobProto.ErrorCode.Builder builderForValue) {
+        if (errCodeBuilder_ == null) {
+          errCode_ = builderForValue.build();
+          onChanged();
+        } else {
+          errCodeBuilder_.setMessage(builderForValue.build());
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public Builder mergeErrCode(com.choi.elastic_job.proto.JobProto.ErrorCode value) {
+        if (errCodeBuilder_ == null) {
+          if (errCode_ != null) {
+            errCode_ =
+              com.choi.elastic_job.proto.JobProto.ErrorCode.newBuilder(errCode_).mergeFrom(value).buildPartial();
+          } else {
+            errCode_ = value;
+          }
+          onChanged();
+        } else {
+          errCodeBuilder_.mergeFrom(value);
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public Builder clearErrCode() {
+        if (errCodeBuilder_ == null) {
+          errCode_ = null;
+          onChanged();
+        } else {
+          errCode_ = null;
+          errCodeBuilder_ = null;
+        }
+
+        return this;
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public com.choi.elastic_job.proto.JobProto.ErrorCode.Builder getErrCodeBuilder() {
+        
+        onChanged();
+        return getErrCodeFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      public com.choi.elastic_job.proto.JobProto.ErrorCodeOrBuilder getErrCodeOrBuilder() {
+        if (errCodeBuilder_ != null) {
+          return errCodeBuilder_.getMessageOrBuilder();
+        } else {
+          return errCode_ == null ?
+              com.choi.elastic_job.proto.JobProto.ErrorCode.getDefaultInstance() : errCode_;
+        }
+      }
+      /**
+       * <code>.ErrorCode err_code = 2;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          com.choi.elastic_job.proto.JobProto.ErrorCode, com.choi.elastic_job.proto.JobProto.ErrorCode.Builder, com.choi.elastic_job.proto.JobProto.ErrorCodeOrBuilder> 
+          getErrCodeFieldBuilder() {
+        if (errCodeBuilder_ == null) {
+          errCodeBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.choi.elastic_job.proto.JobProto.ErrorCode, com.choi.elastic_job.proto.JobProto.ErrorCode.Builder, com.choi.elastic_job.proto.JobProto.ErrorCodeOrBuilder>(
+                  getErrCode(),
+                  getParentForChildren(),
+                  isClean());
+          errCode_ = null;
+        }
+        return errCodeBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFieldsProto3(unknownFields);
+      }
+
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:JobList)
+    }
+
+    // @@protoc_insertion_point(class_scope:JobList)
+    private static final com.choi.elastic_job.proto.JobProto.JobList DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.choi.elastic_job.proto.JobProto.JobList();
+    }
+
+    public static com.choi.elastic_job.proto.JobProto.JobList getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<JobList>
+        PARSER = new com.google.protobuf.AbstractParser<JobList>() {
+      public JobList parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new JobList(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<JobList> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<JobList> getParserForType() {
+      return PARSER;
+    }
+
+    public com.choi.elastic_job.proto.JobProto.JobList getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -4129,10 +4631,15 @@ public final class JobProto {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_ClientInfo_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_JobInfoReply_descriptor;
+    internal_static_JobInfo_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_JobInfoReply_fieldAccessorTable;
+      internal_static_JobInfo_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_JobList_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_JobList_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_JobResultResponse_descriptor;
   private static final 
@@ -4157,20 +4664,21 @@ public final class JobProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\tJob.proto\"P\n\nClientInfo\022\024\n\014io_resource" +
-      "s\030\001 \001(\t\022\030\n\020storage_resource\030\002 \001(\t\022\022\n\ncpu" +
-      "_source\030\003 \001(\t\"g\n\014JobInfoReply\022\n\n\002id\030\001 \001(" +
-      "\t\022\014\n\004name\030\002 \001(\t\022\020\n\010category\030\003 \001(\t\022\r\n\005par" +
-      "am\030\004 \001(\t\022\034\n\010err_code\030\005 \001(\0132\n.ErrorCode\"]" +
-      "\n\021JobResultResponse\022\n\n\002id\030\001 \001(\t\022\016\n\006statu" +
-      "s\030\002 \001(\t\022\016\n\006result\030\003 \001(\t\022\034\n\010err_code\030\004 \001(" +
-      "\0132\n.ErrorCode\"\"\n\024SendJobResultRequest\022\n\n" +
-      "\002id\030\001 \001(\t\"*\n\tErrorCode\022\014\n\004code\030\001 \001(\t\022\017\n\007" +
-      "message\030\002 \001(\t2p\n\007Service\022\'\n\007getJobs\022\013.Cl" +
-      "ientInfo\032\r.JobInfoReply\"\000\022<\n\rsendJobResu" +
-      "lt\022\025.SendJobResultRequest\032\022.JobResultRes" +
-      "ponse\"\000B(\n\032com.choi.elastic_job.protoB\010J" +
-      "obProtoP\000b\006proto3"
+      "\n\tJob.proto\"\037\n\nClientInfo\022\021\n\tresources\030\001" +
+      " \001(\t\"b\n\007JobInfo\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(" +
+      "\t\022\020\n\010category\030\003 \001(\t\022\r\n\005param\030\004 \001(\t\022\034\n\010er" +
+      "r_code\030\005 \001(\0132\n.ErrorCode\"6\n\007JobList\022\r\n\005a" +
+      "rray\030\001 \003(\t\022\034\n\010err_code\030\002 \001(\0132\n.ErrorCode" +
+      "\"]\n\021JobResultResponse\022\n\n\002id\030\001 \001(\t\022\016\n\006sta" +
+      "tus\030\002 \001(\t\022\016\n\006result\030\003 \001(\t\022\034\n\010err_code\030\004 " +
+      "\001(\0132\n.ErrorCode\"\"\n\024SendJobResultRequest\022" +
+      "\n\n\002id\030\001 \001(\t\"*\n\tErrorCode\022\014\n\004code\030\001 \001(\t\022\017" +
+      "\n\007message\030\002 \001(\t2\215\001\n\007Service\022\"\n\007getJobs\022\013" +
+      ".ClientInfo\032\010.JobList\"\000\022<\n\rsendJobResult" +
+      "\022\025.SendJobResultRequest\032\022.JobResultRespo" +
+      "nse\"\000\022 \n\004ping\022\n.ErrorCode\032\n.ErrorCode\"\000B" +
+      "(\n\032com.choi.elastic_job.protoB\010JobProtoP" +
+      "\000b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -4189,27 +4697,33 @@ public final class JobProto {
     internal_static_ClientInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ClientInfo_descriptor,
-        new java.lang.String[] { "IoResources", "StorageResource", "CpuSource", });
-    internal_static_JobInfoReply_descriptor =
+        new java.lang.String[] { "Resources", });
+    internal_static_JobInfo_descriptor =
       getDescriptor().getMessageTypes().get(1);
-    internal_static_JobInfoReply_fieldAccessorTable = new
+    internal_static_JobInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_JobInfoReply_descriptor,
+        internal_static_JobInfo_descriptor,
         new java.lang.String[] { "Id", "Name", "Category", "Param", "ErrCode", });
-    internal_static_JobResultResponse_descriptor =
+    internal_static_JobList_descriptor =
       getDescriptor().getMessageTypes().get(2);
+    internal_static_JobList_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_JobList_descriptor,
+        new java.lang.String[] { "Array", "ErrCode", });
+    internal_static_JobResultResponse_descriptor =
+      getDescriptor().getMessageTypes().get(3);
     internal_static_JobResultResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_JobResultResponse_descriptor,
         new java.lang.String[] { "Id", "Status", "Result", "ErrCode", });
     internal_static_SendJobResultRequest_descriptor =
-      getDescriptor().getMessageTypes().get(3);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_SendJobResultRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SendJobResultRequest_descriptor,
         new java.lang.String[] { "Id", });
     internal_static_ErrorCode_descriptor =
-      getDescriptor().getMessageTypes().get(4);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_ErrorCode_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_ErrorCode_descriptor,

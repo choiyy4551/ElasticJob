@@ -7,10 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -19,27 +16,15 @@ public class ClientJobHandler{
     LeaderService leaderService;
     @Autowired
     ClientInfo clientInfo;
+    @Autowired
+    Client client;
+
     public void runJob(JobInfo jobInfo){
         onJobStart(jobInfo);
-        //用Timer来模拟运行任务耗时
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-            }
-        },Integer.parseInt(jobInfo.getParam())*200);
+        jobInfo.getClientInterface().run();
         onJobEnd(jobInfo);
     }
     public void onJobStart(JobInfo jobInfo){
-        if(jobInfo.getCategory().equals("io")){
-            clientInfo.setIo_resources(Integer.parseInt(clientInfo.getIo_resources())-Integer.parseInt(jobInfo.getParam())+"");
-        }else if(jobInfo.getCategory().equals("storage")){
-            clientInfo.setStorage_resource(Integer.parseInt(clientInfo.getStorage_resource())-Integer.parseInt(jobInfo.getParam())+"");
-        }else if(jobInfo.getCategory().equals("cpu")){
-            clientInfo.setCpu_resource(Integer.parseInt(clientInfo.getCpu_resource())-Integer.parseInt(jobInfo.getParam())+"");
-        }else {
-            log.warn("Wrong in Job category");
-        }
         log.info("Job:"+jobInfo.getId()+"start to run");
     }
 
@@ -48,5 +33,13 @@ public class ClientJobHandler{
         Map<String, Object> map = new HashMap<String,Object>();
         map.put("done success",jobInfo.getId());
         leaderService.insert_job_result(map);
+        client.sendJobResult(jobInfo.getId());
+    }
+    public void transmitJob(ArrayList<String> arr){
+        //获取jobInfo执行任务
+        for (String jobId: arr) {
+            JobInfo jobInfo = leaderService.select_job(jobId);
+            runJob(jobInfo);
+        }
     }
 }

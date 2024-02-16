@@ -28,21 +28,21 @@ public final class ServiceGrpc {
 
   // Static method descriptors that strictly reflect the proto.
   private static volatile io.grpc.MethodDescriptor<com.choi.elastic_job.proto.JobProto.ClientInfo,
-      com.choi.elastic_job.proto.JobProto.JobInfoReply> getGetJobsMethod;
+      com.choi.elastic_job.proto.JobProto.JobList> getGetJobsMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
       fullMethodName = SERVICE_NAME + '/' + "getJobs",
       requestType = com.choi.elastic_job.proto.JobProto.ClientInfo.class,
-      responseType = com.choi.elastic_job.proto.JobProto.JobInfoReply.class,
+      responseType = com.choi.elastic_job.proto.JobProto.JobList.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
   public static io.grpc.MethodDescriptor<com.choi.elastic_job.proto.JobProto.ClientInfo,
-      com.choi.elastic_job.proto.JobProto.JobInfoReply> getGetJobsMethod() {
-    io.grpc.MethodDescriptor<com.choi.elastic_job.proto.JobProto.ClientInfo, com.choi.elastic_job.proto.JobProto.JobInfoReply> getGetJobsMethod;
+      com.choi.elastic_job.proto.JobProto.JobList> getGetJobsMethod() {
+    io.grpc.MethodDescriptor<com.choi.elastic_job.proto.JobProto.ClientInfo, com.choi.elastic_job.proto.JobProto.JobList> getGetJobsMethod;
     if ((getGetJobsMethod = ServiceGrpc.getGetJobsMethod) == null) {
       synchronized (ServiceGrpc.class) {
         if ((getGetJobsMethod = ServiceGrpc.getGetJobsMethod) == null) {
           ServiceGrpc.getGetJobsMethod = getGetJobsMethod = 
-              io.grpc.MethodDescriptor.<com.choi.elastic_job.proto.JobProto.ClientInfo, com.choi.elastic_job.proto.JobProto.JobInfoReply>newBuilder()
+              io.grpc.MethodDescriptor.<com.choi.elastic_job.proto.JobProto.ClientInfo, com.choi.elastic_job.proto.JobProto.JobList>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
               .setFullMethodName(generateFullMethodName(
                   "Service", "getJobs"))
@@ -50,7 +50,7 @@ public final class ServiceGrpc {
               .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
                   com.choi.elastic_job.proto.JobProto.ClientInfo.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
-                  com.choi.elastic_job.proto.JobProto.JobInfoReply.getDefaultInstance()))
+                  com.choi.elastic_job.proto.JobProto.JobList.getDefaultInstance()))
                   .setSchemaDescriptor(new ServiceMethodDescriptorSupplier("getJobs"))
                   .build();
           }
@@ -91,6 +91,38 @@ public final class ServiceGrpc {
      return getSendJobResultMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.choi.elastic_job.proto.JobProto.ErrorCode,
+      com.choi.elastic_job.proto.JobProto.ErrorCode> getPingMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "ping",
+      requestType = com.choi.elastic_job.proto.JobProto.ErrorCode.class,
+      responseType = com.choi.elastic_job.proto.JobProto.ErrorCode.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.choi.elastic_job.proto.JobProto.ErrorCode,
+      com.choi.elastic_job.proto.JobProto.ErrorCode> getPingMethod() {
+    io.grpc.MethodDescriptor<com.choi.elastic_job.proto.JobProto.ErrorCode, com.choi.elastic_job.proto.JobProto.ErrorCode> getPingMethod;
+    if ((getPingMethod = ServiceGrpc.getPingMethod) == null) {
+      synchronized (ServiceGrpc.class) {
+        if ((getPingMethod = ServiceGrpc.getPingMethod) == null) {
+          ServiceGrpc.getPingMethod = getPingMethod = 
+              io.grpc.MethodDescriptor.<com.choi.elastic_job.proto.JobProto.ErrorCode, com.choi.elastic_job.proto.JobProto.ErrorCode>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(
+                  "Service", "ping"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.choi.elastic_job.proto.JobProto.ErrorCode.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.choi.elastic_job.proto.JobProto.ErrorCode.getDefaultInstance()))
+                  .setSchemaDescriptor(new ServiceMethodDescriptorSupplier("ping"))
+                  .build();
+          }
+        }
+     }
+     return getPingMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
@@ -121,7 +153,7 @@ public final class ServiceGrpc {
     /**
      */
     public void getJobs(com.choi.elastic_job.proto.JobProto.ClientInfo request,
-        io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobInfoReply> responseObserver) {
+        io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobList> responseObserver) {
       asyncUnimplementedUnaryCall(getGetJobsMethod(), responseObserver);
     }
 
@@ -132,6 +164,13 @@ public final class ServiceGrpc {
       asyncUnimplementedUnaryCall(getSendJobResultMethod(), responseObserver);
     }
 
+    /**
+     */
+    public void ping(com.choi.elastic_job.proto.JobProto.ErrorCode request,
+        io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.ErrorCode> responseObserver) {
+      asyncUnimplementedUnaryCall(getPingMethod(), responseObserver);
+    }
+
     @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -139,7 +178,7 @@ public final class ServiceGrpc {
             asyncUnaryCall(
               new MethodHandlers<
                 com.choi.elastic_job.proto.JobProto.ClientInfo,
-                com.choi.elastic_job.proto.JobProto.JobInfoReply>(
+                com.choi.elastic_job.proto.JobProto.JobList>(
                   this, METHODID_GET_JOBS)))
           .addMethod(
             getSendJobResultMethod(),
@@ -148,6 +187,13 @@ public final class ServiceGrpc {
                 com.choi.elastic_job.proto.JobProto.SendJobResultRequest,
                 com.choi.elastic_job.proto.JobProto.JobResultResponse>(
                   this, METHODID_SEND_JOB_RESULT)))
+          .addMethod(
+            getPingMethod(),
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.choi.elastic_job.proto.JobProto.ErrorCode,
+                com.choi.elastic_job.proto.JobProto.ErrorCode>(
+                  this, METHODID_PING)))
           .build();
     }
   }
@@ -173,7 +219,7 @@ public final class ServiceGrpc {
     /**
      */
     public void getJobs(com.choi.elastic_job.proto.JobProto.ClientInfo request,
-        io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobInfoReply> responseObserver) {
+        io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobList> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getGetJobsMethod(), getCallOptions()), request, responseObserver);
     }
@@ -184,6 +230,14 @@ public final class ServiceGrpc {
         io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobResultResponse> responseObserver) {
       asyncUnaryCall(
           getChannel().newCall(getSendJobResultMethod(), getCallOptions()), request, responseObserver);
+    }
+
+    /**
+     */
+    public void ping(com.choi.elastic_job.proto.JobProto.ErrorCode request,
+        io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.ErrorCode> responseObserver) {
+      asyncUnaryCall(
+          getChannel().newCall(getPingMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -207,7 +261,7 @@ public final class ServiceGrpc {
 
     /**
      */
-    public com.choi.elastic_job.proto.JobProto.JobInfoReply getJobs(com.choi.elastic_job.proto.JobProto.ClientInfo request) {
+    public com.choi.elastic_job.proto.JobProto.JobList getJobs(com.choi.elastic_job.proto.JobProto.ClientInfo request) {
       return blockingUnaryCall(
           getChannel(), getGetJobsMethod(), getCallOptions(), request);
     }
@@ -217,6 +271,13 @@ public final class ServiceGrpc {
     public com.choi.elastic_job.proto.JobProto.JobResultResponse sendJobResult(com.choi.elastic_job.proto.JobProto.SendJobResultRequest request) {
       return blockingUnaryCall(
           getChannel(), getSendJobResultMethod(), getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.choi.elastic_job.proto.JobProto.ErrorCode ping(com.choi.elastic_job.proto.JobProto.ErrorCode request) {
+      return blockingUnaryCall(
+          getChannel(), getPingMethod(), getCallOptions(), request);
     }
   }
 
@@ -240,7 +301,7 @@ public final class ServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.choi.elastic_job.proto.JobProto.JobInfoReply> getJobs(
+    public com.google.common.util.concurrent.ListenableFuture<com.choi.elastic_job.proto.JobProto.JobList> getJobs(
         com.choi.elastic_job.proto.JobProto.ClientInfo request) {
       return futureUnaryCall(
           getChannel().newCall(getGetJobsMethod(), getCallOptions()), request);
@@ -253,10 +314,19 @@ public final class ServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(getSendJobResultMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.choi.elastic_job.proto.JobProto.ErrorCode> ping(
+        com.choi.elastic_job.proto.JobProto.ErrorCode request) {
+      return futureUnaryCall(
+          getChannel().newCall(getPingMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_GET_JOBS = 0;
   private static final int METHODID_SEND_JOB_RESULT = 1;
+  private static final int METHODID_PING = 2;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -277,11 +347,15 @@ public final class ServiceGrpc {
       switch (methodId) {
         case METHODID_GET_JOBS:
           serviceImpl.getJobs((com.choi.elastic_job.proto.JobProto.ClientInfo) request,
-              (io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobInfoReply>) responseObserver);
+              (io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobList>) responseObserver);
           break;
         case METHODID_SEND_JOB_RESULT:
           serviceImpl.sendJobResult((com.choi.elastic_job.proto.JobProto.SendJobResultRequest) request,
               (io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.JobResultResponse>) responseObserver);
+          break;
+        case METHODID_PING:
+          serviceImpl.ping((com.choi.elastic_job.proto.JobProto.ErrorCode) request,
+              (io.grpc.stub.StreamObserver<com.choi.elastic_job.proto.JobProto.ErrorCode>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -346,6 +420,7 @@ public final class ServiceGrpc {
               .setSchemaDescriptor(new ServiceFileDescriptorSupplier())
               .addMethod(getGetJobsMethod())
               .addMethod(getSendJobResultMethod())
+              .addMethod(getPingMethod())
               .build();
         }
       }

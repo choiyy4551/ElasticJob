@@ -22,12 +22,8 @@ public interface LeaderService {
     void insert_job_result(Map<String,Object> map);
     @Select("select * from job.alljobs where id=#{id}")
     JobInfo select_job(String id);
-    @Select("select id,priority,param,scheduleType,scheduleParam,lastScheduleTime from job.alljobs where category= io")
-    List<JobCompareParam> select_io_jobs();
-    @Select("select id,priority,param,scheduleType,scheduleParam,lastScheduleTime from job.alljobs where category= storage")
-    List<JobCompareParam> select_storage_jobs();
-    @Select("select id,priority,param,scheduleType,scheduleParam,lastScheduleTime from job.alljobs where category= cpu")
-    List<JobCompareParam> select_cpu_jobs();
+    @Select("select id,priority,param,scheduleType,scheduleParam,lastScheduleTime from job.alljobs")
+    List<JobCompareParam> select_jobs();
     @Select("select result from job.alljobs where id=#{id}")
     String select_job_result(int id);
     @Delete("delete from job.alljobs where id=#{id}")

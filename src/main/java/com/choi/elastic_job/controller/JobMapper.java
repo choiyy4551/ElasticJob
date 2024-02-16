@@ -22,11 +22,10 @@ public class JobMapper {
             JobInfo jobInfo=new JobInfo();
             jobInfo.setId(map.get("id"));
             jobInfo.setName(map.get("name"));
-            jobInfo.setCategory(map.get("category"));
             jobInfo.setParam(map.get("param"));
-            jobInfo.setScheduleType(map.get("scheduleType"));
             jobInfo.setScheduleParam(map.get("scheduleParam"));
             jobInfo.setPriority(Integer.parseInt(map.get("priority")));
+            // jobInfo.setClientInterface();
             return server.addJob(jobInfo);
         }
         @RequestMapping("/GetAllJob")
