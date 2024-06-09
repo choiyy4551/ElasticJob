@@ -96,10 +96,10 @@ public class SlaveNode {
         return jobInfoList;
     }
     private boolean register() {
-        String resource = node.getConfiguration().getResources();
+        String resources = node.getConfiguration().getResources();
         String maxParallel = node.getConfiguration().getResources();
         RegisterNodeRequest registerNodeRequest = RegisterNodeRequest.newBuilder().setNodeId(nodeId)
-                .setResources(resource).setMaxParallel(maxParallel).build();
+                .setResources(resources).setMaxParallel(maxParallel).build();
         RegisterNodeReply registerNodeReply;
         try {
             registerNodeReply = stub.registerNode(registerNodeRequest);
@@ -188,7 +188,7 @@ public class SlaveNode {
         JobRequest jobRequest = JobRequest.newBuilder().setNodeId(nodeId).setResource(node.getConfiguration().getResources())
                 .setParallelJobNum(StringAndInteger.IntegerToString(node.getConfiguration().getMaxParallel())).build();
         JobReply jobReply;
-        List<JobInfo> jobInfos = new ArrayList<>();
+        List<JobInfo> jobInfoList = new ArrayList<>();
         try {
             jobReply = stub.getJob(jobRequest);
         } catch (RuntimeException e) {
@@ -224,10 +224,10 @@ public class SlaveNode {
             for (com.choi.grpc.JobInfo jobInfo : jobReply.getJobList().getJobInfoList()) {
                 String uuid = jobInfo.getId();
                 JobInfo jobById = jobMapper.getJobById(uuid);
-                jobInfos.add(jobById);
+                jobInfoList.add(jobById);
             }
         }
-        return jobInfos;
+        return jobInfoList;
     }
     class Producer implements Runnable {
         private final BlockingQueue<JobInfo> queue;
@@ -240,10 +240,10 @@ public class SlaveNode {
                 return;
             try {
                 //生产者模型，阻塞队列会自动唤醒消费者
-                List<JobInfo> jobInfos = getJobFromMaster();
-                if (jobInfos == null || jobInfos.isEmpty())
+                List<JobInfo> jobInfoList = getJobFromMaster();
+                if (jobInfoList == null || jobInfoList.isEmpty())
                     return;
-                for (JobInfo jobInfo : jobInfos) {
+                for (JobInfo jobInfo : jobInfoList) {
                     queue.put(jobInfo);
                 }
             } catch (InterruptedException e) {

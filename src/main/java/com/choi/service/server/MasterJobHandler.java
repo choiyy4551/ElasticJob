@@ -38,8 +38,8 @@ public class MasterJobHandler{
     }
     public void setJobTime() {
         //只有启动时从数据库中重新读取一遍任务
-        List<JobInfo> jobInfos = jobMapper.getAllJob();
-        for (JobInfo jobinfo : jobInfos) {
+        List<JobInfo> jobInfoList = jobMapper.getAllJob();
+        for (JobInfo jobinfo : jobInfoList) {
             JobTimeInfo jobTimeInfo = createJobTimeInfo(jobinfo);
             moveToWaiting(jobTimeInfo);
             jobTimes.put(jobTimeInfo.getUuid(), jobTimeInfo);
@@ -101,20 +101,20 @@ public class MasterJobHandler{
     public List<JobInfo> divideJob(String resources, String maxParallel) {
         int count = 0;
         int restResources = StringAndInteger.StringToInteger(resources);
-        List<JobInfo> jobInfos = new ArrayList<>();
+        List<JobInfo> jobInfoList = new ArrayList<>();
         while (count < Integer.parseInt(maxParallel)) {
             JobTimeInfo jobTimeInfo = waitingJob.peek();
             JobInfo jobInfo = jobTimeInfo.getJobInfo();
             int param = StringAndInteger.StringToInteger(jobInfo.getParam());
             if (restResources > StringAndInteger.StringToInteger(jobInfo.getParam())) {
                 restResources -= param;
-                jobInfos.add(jobInfo);
+                jobInfoList.add(jobInfo);
                 moveToRunning(jobTimeInfo);
                 continue;
             }
             break;
         }
-        return jobInfos;
+        return jobInfoList;
     }
     private JobTimeInfo createJobTimeInfo(JobInfo jobInfo) {
         JobTimeInfo jobTimeInfo = new JobTimeInfo();
