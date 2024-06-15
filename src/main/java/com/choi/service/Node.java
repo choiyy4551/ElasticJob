@@ -62,7 +62,14 @@ public class Node {
             slaveNode.start(queue);
         }
     }
-
+    //只有主节点才能添加任务，从节点只能将任务信息转发给主节点
+    public boolean addJob(JobInfo jobInfo) {
+        if (hasLock) {
+            return masterNode.addJob(jobInfo);
+        } else {
+            return slaveNode.addJob(jobInfo);
+        }
+    }
     //获取集群锁线程
     private class GetLock implements Runnable {
         @Override

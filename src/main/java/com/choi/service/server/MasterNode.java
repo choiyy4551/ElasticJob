@@ -211,10 +211,10 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
                         return;
                     }
                     //分配任务
-                    List<JobInfo> jobInfos = divideJob(resource, maxParallel);
+                    List<JobInfo> jobInfoList = divideJob(resource, maxParallel);
                     errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("success").build();
                     JobList.Builder jobListBuilder = JobList.newBuilder();
-                    jobListBuilder.addAllJobInfo(jobInfos);
+                    jobListBuilder.addAllJobInfo(jobInfoList);
                     jobReply = JobReply.newBuilder().setJobList(jobListBuilder).setErr(errorCode).build();
                 } else {
                     errorCode = ErrorCode.newBuilder().setCode("Err").setMessage("have not registered").build();
@@ -223,6 +223,34 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
                 responseObserver.onNext(jobReply);
                 responseObserver.onCompleted();
             }
+        }
+        @Override
+        public void addJob(AddJobInfo request, StreamObserver<AddJobReply> responseObserver) {
+            ErrorCode errorCode;
+            AddJobReply addJobReply;
+            if (!node.isHasLock()) {
+                errorCode = ErrorCode.newBuilder().setCode("MasterErr").setMessage("I am not Master").build();
+                addJobReply = AddJobReply.newBuilder().setErr(errorCode).build();
+                responseObserver.onNext(addJobReply);
+                responseObserver.onCompleted();
+                return;
+            }
+            String name = request.getName();
+            String param = request.getParam();
+            String scheduleType = request.getScheduleType();
+            String scheduleParam = request.getScheduleParam();
+            JobInfo jobInfo = new JobInfo();
+            jobInfo.setName(name);
+            jobInfo.setParam(param);
+            jobInfo.setScheduleType(scheduleType);
+            jobInfo.setScheduleParam(scheduleParam);
+            if (MasterNode.this.addJob(jobInfo))
+                errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("addJob successfully").build();
+            else
+                errorCode = ErrorCode.newBuilder().setCode("Err").setMessage("addJob error").build();
+            addJobReply = AddJobReply.newBuilder().setErr(errorCode).build();
+            responseObserver.onNext(addJobReply);
+            responseObserver.onCompleted();
         }
     }
 

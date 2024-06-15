@@ -52,6 +52,9 @@ public class SlaveNode {
     }
 
     public void stop() {
+        if (!deregister()) {
+            //log
+        }
         slaveShutdown = true;
     }
 
@@ -96,10 +99,10 @@ public class SlaveNode {
         return jobInfoList;
     }
     private boolean register() {
-        String resources = node.getConfiguration().getResources();
+        String resource = node.getConfiguration().getResources();
         String maxParallel = node.getConfiguration().getResources();
         RegisterNodeRequest registerNodeRequest = RegisterNodeRequest.newBuilder().setNodeId(nodeId)
-                .setResources(resources).setMaxParallel(maxParallel).build();
+                .setResources(resource).setMaxParallel(maxParallel).build();
         RegisterNodeReply registerNodeReply;
         try {
             registerNodeReply = stub.registerNode(registerNodeRequest);
@@ -228,6 +231,37 @@ public class SlaveNode {
             }
         }
         return jobInfoList;
+    }
+    public boolean addJob(JobInfo jobInfo) {
+        AddJobInfo addJobInfo = AddJobInfo.newBuilder().setName(jobInfo.getName()).setParam(jobInfo.getParam())
+                .setScheduleType(jobInfo.getScheduleType()).setScheduleParam(jobInfo.getScheduleParam()).build();
+        AddJobReply addJobReply;
+        try {
+            addJobReply = stub.addJob(addJobInfo);
+        } catch (RuntimeException e) {
+            throw e;
+        }
+        String code = addJobReply.getErr().getCode();
+        if ("MasterErr".equals(code)) {
+            synchronized (object) {
+                try {
+                    object.wait(5000);
+                    if (slaveShutdown) {
+                        //节点关闭
+                        stop();
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            String host = redisUtils.get(clusterName);
+            stub = slaveStub.getBlockingStub(host);
+            return addJob(jobInfo);
+        }
+        if ("Success".equals(code)) {
+            return true;
+        }
+        return false;
     }
     class Producer implements Runnable {
         private final BlockingQueue<JobInfo> queue;

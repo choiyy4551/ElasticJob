@@ -1,4 +1,4 @@
-package com.choi.pojo;
+package com.choi.Enums;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

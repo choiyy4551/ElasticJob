@@ -2,10 +2,12 @@ package com.choi.mapper;
 
 
 import com.choi.pojo.*;
+import lombok.Data;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+
 @Repository
 public interface JobMapper {
     /**
@@ -46,6 +48,10 @@ public interface JobMapper {
     JobInfo getJobByName(String name);
     @Select("select * from JobInfo where uuid = #{uuid}")
     JobInfo getJobById(String uuid);
+    @Update("update JobInfo set deleteStatus = 0 where uuid = #{uuid}")
+    boolean startJob(String uuid);
+    @Update("update JobInfo set deleteStatus = 1 where uuid = #{uuid}")
+    boolean stopJob(String uuid);
     @Select("select * from job_result where uuid = #{uuid}")
     JobResult getJobResultById(String uuid);
     @Select("select * from job_result")

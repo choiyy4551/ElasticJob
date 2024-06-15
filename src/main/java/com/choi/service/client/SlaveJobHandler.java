@@ -70,6 +70,19 @@ public class SlaveJobHandler implements SlaveService{
                     addResult(jobResult);
                     jobInfo.setLastRunTime(scheduleTime.Now());
                     //log
+
+                    //run完之后判断任务的类型，看看是否要被删除
+                    switch (jobInfo.getScheduleType()) {
+                        case "One" : {
+                            jobMapper.stopJob(jobInfo.getUuid());
+                        }
+                        case "Repeat" : {
+                            jobMapper.stopJob(jobInfo.getUuid());
+                        }
+                        case "Daily" : {
+                            //每日任务则继续启用
+                        }
+                    }
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

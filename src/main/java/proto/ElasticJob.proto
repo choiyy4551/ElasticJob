@@ -8,6 +8,7 @@ service ElasticJobService {
   rpc RegisterNode(RegisterNodeRequest) returns (RegisterNodeReply) {}
   rpc DeregisterNode(DeregisterNodeRequest) returns (DeregisterNodeReply) {}
   rpc GetJob(JobRequest) returns (JobReply) {}
+  rpc AddJob(AddJobRequest) returns (AddJobReply) {}
 }
 
 message RegisterNodeRequest {
@@ -25,7 +26,6 @@ message JobInfo {
   string name = 2;
   string param = 3;
 }
-
 message JobRequest {
   string nodeId = 1;
   string resource = 2;
@@ -47,6 +47,17 @@ message DeregisterNodeReply {
 
 message DeregisterNodeRequest {
   string nodeId = 1;
+}
+
+message AddJobRequest {
+  string name = 1;
+  string param = 2;
+  string scheduleType = 3;
+  string scheduleParam = 4;
+}
+
+message AddJobReply {
+  ErrorCode err = 1;
 }
 
 message ErrorCode {

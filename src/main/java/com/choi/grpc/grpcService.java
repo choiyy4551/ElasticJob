@@ -55,6 +55,16 @@ public final class grpcService {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_choi_service_DeregisterNodeRequest_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_choi_service_AddJobInfo_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_choi_service_AddJobInfo_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_choi_service_AddJobReply_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_choi_service_AddJobReply_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_choi_service_ErrorCode_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -82,16 +92,21 @@ public final class grpcService {
       "service.JobInfo\"?\n\023DeregisterNodeReply\022(" +
       "\n\003err\030\001 \001(\0132\033.com.choi.service.ErrorCode" +
       "\"\'\n\025DeregisterNodeRequest\022\016\n\006nodeId\030\001 \001(" +
-      "\t\"*\n\tErrorCode\022\014\n\004code\030\001 \001(\t\022\017\n\007message\030" +
-      "\002 \001(\t2\233\002\n\021ElasticJobService\022\\\n\014RegisterN" +
-      "ode\022%.com.choi.service.RegisterNodeReque" +
-      "st\032#.com.choi.service.RegisterNodeReply\"" +
-      "\000\022b\n\016DeregisterNode\022\'.com.choi.service.D" +
-      "eregisterNodeRequest\032%.com.choi.service." +
-      "DeregisterNodeReply\"\000\022D\n\006GetJob\022\034.com.ch" +
-      "oi.service.JobRequest\032\032.com.choi.service" +
-      ".JobReply\"\000B\036\n\rcom.choi.grpcB\013grpcServic" +
-      "eP\001b\006proto3"
+      "\t\"V\n\nAddJobInfo\022\014\n\004name\030\001 \001(\t\022\r\n\005param\030\002" +
+      " \001(\t\022\024\n\014scheduleType\030\003 \001(\t\022\025\n\rschedulePa" +
+      "ram\030\004 \001(\t\"7\n\013AddJobReply\022(\n\003err\030\001 \001(\0132\033." +
+      "com.choi.service.ErrorCode\"*\n\tErrorCode\022" +
+      "\014\n\004code\030\001 \001(\t\022\017\n\007message\030\002 \001(\t2\344\002\n\021Elast" +
+      "icJobService\022\\\n\014RegisterNode\022%.com.choi." +
+      "service.RegisterNodeRequest\032#.com.choi.s" +
+      "ervice.RegisterNodeReply\"\000\022b\n\016Deregister" +
+      "Node\022\'.com.choi.service.DeregisterNodeRe" +
+      "quest\032%.com.choi.service.DeregisterNodeR" +
+      "eply\"\000\022D\n\006GetJob\022\034.com.choi.service.JobR" +
+      "equest\032\032.com.choi.service.JobReply\"\000\022G\n\006" +
+      "AddJob\022\034.com.choi.service.AddJobInfo\032\035.c" +
+      "om.choi.service.AddJobReply\"\000B\036\n\rcom.cho" +
+      "i.grpcB\013grpcServiceP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -145,8 +160,20 @@ public final class grpcService {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_DeregisterNodeRequest_descriptor,
         new String[] { "NodeId", });
-    internal_static_com_choi_service_ErrorCode_descriptor =
+    internal_static_com_choi_service_AddJobInfo_descriptor =
       getDescriptor().getMessageTypes().get(8);
+    internal_static_com_choi_service_AddJobInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_choi_service_AddJobInfo_descriptor,
+        new String[] { "Name", "Param", "ScheduleType", "ScheduleParam", });
+    internal_static_com_choi_service_AddJobReply_descriptor =
+      getDescriptor().getMessageTypes().get(9);
+    internal_static_com_choi_service_AddJobReply_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_choi_service_AddJobReply_descriptor,
+        new String[] { "Err", });
+    internal_static_com_choi_service_ErrorCode_descriptor =
+      getDescriptor().getMessageTypes().get(10);
     internal_static_com_choi_service_ErrorCode_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_ErrorCode_descriptor,

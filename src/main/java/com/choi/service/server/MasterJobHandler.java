@@ -1,13 +1,17 @@
 package com.choi.service.server;
 
+import com.choi.config.ThreadPoolConfig;
 import com.choi.mapper.JobMapper;
+import com.choi.pojo.AtOnceJob;
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.JobTimeInfo;
+import com.choi.pojo.TimeJob;
 import com.choi.service.Node;
 import com.choi.utils.MyUUID;
 import com.choi.utils.ScheduleTime;
 import com.choi.utils.StringAndInteger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import java.util.*;
 
@@ -34,7 +38,7 @@ public class MasterJobHandler{
 
     public void stop() {
         //设置shutdown回收线程
-       node.setShutDown(true);
+        node.setShutDown(true);
     }
     public void setJobTime() {
         //只有启动时从数据库中重新读取一遍任务
@@ -101,20 +105,20 @@ public class MasterJobHandler{
     public List<JobInfo> divideJob(String resources, String maxParallel) {
         int count = 0;
         int restResources = StringAndInteger.StringToInteger(resources);
-        List<JobInfo> jobInfoList = new ArrayList<>();
+        List<JobInfo> jobInfos = new ArrayList<>();
         while (count < Integer.parseInt(maxParallel)) {
             JobTimeInfo jobTimeInfo = waitingJob.peek();
             JobInfo jobInfo = jobTimeInfo.getJobInfo();
             int param = StringAndInteger.StringToInteger(jobInfo.getParam());
             if (restResources > StringAndInteger.StringToInteger(jobInfo.getParam())) {
                 restResources -= param;
-                jobInfoList.add(jobInfo);
+                jobInfos.add(jobInfo);
                 moveToRunning(jobTimeInfo);
                 continue;
             }
             break;
         }
-        return jobInfoList;
+        return jobInfos;
     }
     private JobTimeInfo createJobTimeInfo(JobInfo jobInfo) {
         JobTimeInfo jobTimeInfo = new JobTimeInfo();
