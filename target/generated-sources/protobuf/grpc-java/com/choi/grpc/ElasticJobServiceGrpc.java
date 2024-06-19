@@ -1,4 +1,4 @@
-package grpc;
+package com.choi.grpc;
 
 import static io.grpc.MethodDescriptor.generateFullMethodName;
 
@@ -12,7 +12,7 @@ public final class ElasticJobServiceGrpc {
 
   private ElasticJobServiceGrpc() {}
 
-  public static final String SERVICE_NAME = "com.choi.service.ElasticJobService";
+  public static final java.lang.String SERVICE_NAME = "com.choi.service.ElasticJobService";
 
   // Static method descriptors that strictly reflect the proto.
   private static volatile io.grpc.MethodDescriptor<com.choi.grpc.RegisterNodeRequest,
@@ -108,13 +108,44 @@ public final class ElasticJobServiceGrpc {
     return getGetJobMethod;
   }
 
+  private static volatile io.grpc.MethodDescriptor<com.choi.grpc.AddJobRequest,
+      com.choi.grpc.AddJobReply> getAddJobMethod;
+
+  @io.grpc.stub.annotations.RpcMethod(
+      fullMethodName = SERVICE_NAME + '/' + "AddJob",
+      requestType = com.choi.grpc.AddJobRequest.class,
+      responseType = com.choi.grpc.AddJobReply.class,
+      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
+  public static io.grpc.MethodDescriptor<com.choi.grpc.AddJobRequest,
+      com.choi.grpc.AddJobReply> getAddJobMethod() {
+    io.grpc.MethodDescriptor<com.choi.grpc.AddJobRequest, com.choi.grpc.AddJobReply> getAddJobMethod;
+    if ((getAddJobMethod = ElasticJobServiceGrpc.getAddJobMethod) == null) {
+      synchronized (ElasticJobServiceGrpc.class) {
+        if ((getAddJobMethod = ElasticJobServiceGrpc.getAddJobMethod) == null) {
+          ElasticJobServiceGrpc.getAddJobMethod = getAddJobMethod =
+              io.grpc.MethodDescriptor.<com.choi.grpc.AddJobRequest, com.choi.grpc.AddJobReply>newBuilder()
+              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "AddJob"))
+              .setSampledToLocalTracing(true)
+              .setRequestMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.choi.grpc.AddJobRequest.getDefaultInstance()))
+              .setResponseMarshaller(io.grpc.protobuf.ProtoUtils.marshaller(
+                  com.choi.grpc.AddJobReply.getDefaultInstance()))
+              .setSchemaDescriptor(new ElasticJobServiceMethodDescriptorSupplier("AddJob"))
+              .build();
+        }
+      }
+    }
+    return getAddJobMethod;
+  }
+
   /**
    * Creates a new async stub that supports all call types for the service
    */
   public static ElasticJobServiceStub newStub(io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<ElasticJobServiceStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<ElasticJobServiceStub>() {
-        @Override
+        @java.lang.Override
         public ElasticJobServiceStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new ElasticJobServiceStub(channel, callOptions);
         }
@@ -129,7 +160,7 @@ public final class ElasticJobServiceGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<ElasticJobServiceBlockingStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<ElasticJobServiceBlockingStub>() {
-        @Override
+        @java.lang.Override
         public ElasticJobServiceBlockingStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new ElasticJobServiceBlockingStub(channel, callOptions);
         }
@@ -144,7 +175,7 @@ public final class ElasticJobServiceGrpc {
       io.grpc.Channel channel) {
     io.grpc.stub.AbstractStub.StubFactory<ElasticJobServiceFutureStub> factory =
       new io.grpc.stub.AbstractStub.StubFactory<ElasticJobServiceFutureStub>() {
-        @Override
+        @java.lang.Override
         public ElasticJobServiceFutureStub newStub(io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
           return new ElasticJobServiceFutureStub(channel, callOptions);
         }
@@ -176,6 +207,13 @@ public final class ElasticJobServiceGrpc {
         io.grpc.stub.StreamObserver<com.choi.grpc.JobReply> responseObserver) {
       io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetJobMethod(), responseObserver);
     }
+
+    /**
+     */
+    default void addJob(com.choi.grpc.AddJobRequest request,
+        io.grpc.stub.StreamObserver<com.choi.grpc.AddJobReply> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getAddJobMethod(), responseObserver);
+    }
   }
 
   /**
@@ -184,7 +222,7 @@ public final class ElasticJobServiceGrpc {
   public static abstract class ElasticJobServiceImplBase
       implements io.grpc.BindableService, AsyncService {
 
-    @Override public final io.grpc.ServerServiceDefinition bindService() {
+    @java.lang.Override public final io.grpc.ServerServiceDefinition bindService() {
       return ElasticJobServiceGrpc.bindService(this);
     }
   }
@@ -199,7 +237,7 @@ public final class ElasticJobServiceGrpc {
       super(channel, callOptions);
     }
 
-    @Override
+    @java.lang.Override
     protected ElasticJobServiceStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new ElasticJobServiceStub(channel, callOptions);
@@ -228,6 +266,14 @@ public final class ElasticJobServiceGrpc {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
           getChannel().newCall(getGetJobMethod(), getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void addJob(com.choi.grpc.AddJobRequest request,
+        io.grpc.stub.StreamObserver<com.choi.grpc.AddJobReply> responseObserver) {
+      io.grpc.stub.ClientCalls.asyncUnaryCall(
+          getChannel().newCall(getAddJobMethod(), getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -240,7 +286,7 @@ public final class ElasticJobServiceGrpc {
       super(channel, callOptions);
     }
 
-    @Override
+    @java.lang.Override
     protected ElasticJobServiceBlockingStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new ElasticJobServiceBlockingStub(channel, callOptions);
@@ -266,6 +312,13 @@ public final class ElasticJobServiceGrpc {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
           getChannel(), getGetJobMethod(), getCallOptions(), request);
     }
+
+    /**
+     */
+    public com.choi.grpc.AddJobReply addJob(com.choi.grpc.AddJobRequest request) {
+      return io.grpc.stub.ClientCalls.blockingUnaryCall(
+          getChannel(), getAddJobMethod(), getCallOptions(), request);
+    }
   }
 
   /**
@@ -278,7 +331,7 @@ public final class ElasticJobServiceGrpc {
       super(channel, callOptions);
     }
 
-    @Override
+    @java.lang.Override
     protected ElasticJobServiceFutureStub build(
         io.grpc.Channel channel, io.grpc.CallOptions callOptions) {
       return new ElasticJobServiceFutureStub(channel, callOptions);
@@ -307,11 +360,20 @@ public final class ElasticJobServiceGrpc {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
           getChannel().newCall(getGetJobMethod(), getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.choi.grpc.AddJobReply> addJob(
+        com.choi.grpc.AddJobRequest request) {
+      return io.grpc.stub.ClientCalls.futureUnaryCall(
+          getChannel().newCall(getAddJobMethod(), getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REGISTER_NODE = 0;
   private static final int METHODID_DEREGISTER_NODE = 1;
   private static final int METHODID_GET_JOB = 2;
+  private static final int METHODID_ADD_JOB = 3;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -326,8 +388,8 @@ public final class ElasticJobServiceGrpc {
       this.methodId = methodId;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
+    @java.lang.Override
+    @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
         case METHODID_REGISTER_NODE:
@@ -342,13 +404,17 @@ public final class ElasticJobServiceGrpc {
           serviceImpl.getJob((com.choi.grpc.JobRequest) request,
               (io.grpc.stub.StreamObserver<com.choi.grpc.JobReply>) responseObserver);
           break;
+        case METHODID_ADD_JOB:
+          serviceImpl.addJob((com.choi.grpc.AddJobRequest) request,
+              (io.grpc.stub.StreamObserver<com.choi.grpc.AddJobReply>) responseObserver);
+          break;
         default:
           throw new AssertionError();
       }
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
+    @java.lang.Override
+    @java.lang.SuppressWarnings("unchecked")
     public io.grpc.stub.StreamObserver<Req> invoke(
         io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
@@ -381,6 +447,13 @@ public final class ElasticJobServiceGrpc {
               com.choi.grpc.JobRequest,
               com.choi.grpc.JobReply>(
                 service, METHODID_GET_JOB)))
+        .addMethod(
+          getAddJobMethod(),
+          io.grpc.stub.ServerCalls.asyncUnaryCall(
+            new MethodHandlers<
+              com.choi.grpc.AddJobRequest,
+              com.choi.grpc.AddJobReply>(
+                service, METHODID_ADD_JOB)))
         .build();
   }
 
@@ -388,12 +461,12 @@ public final class ElasticJobServiceGrpc {
       implements io.grpc.protobuf.ProtoFileDescriptorSupplier, io.grpc.protobuf.ProtoServiceDescriptorSupplier {
     ElasticJobServiceBaseDescriptorSupplier() {}
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Descriptors.FileDescriptor getFileDescriptor() {
       return com.choi.grpc.grpcService.getDescriptor();
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Descriptors.ServiceDescriptor getServiceDescriptor() {
       return getFileDescriptor().findServiceByName("ElasticJobService");
     }
@@ -407,13 +480,13 @@ public final class ElasticJobServiceGrpc {
   private static final class ElasticJobServiceMethodDescriptorSupplier
       extends ElasticJobServiceBaseDescriptorSupplier
       implements io.grpc.protobuf.ProtoMethodDescriptorSupplier {
-    private final String methodName;
+    private final java.lang.String methodName;
 
-    ElasticJobServiceMethodDescriptorSupplier(String methodName) {
+    ElasticJobServiceMethodDescriptorSupplier(java.lang.String methodName) {
       this.methodName = methodName;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Descriptors.MethodDescriptor getMethodDescriptor() {
       return getServiceDescriptor().findMethodByName(methodName);
     }
@@ -432,6 +505,7 @@ public final class ElasticJobServiceGrpc {
               .addMethod(getRegisterNodeMethod())
               .addMethod(getDeregisterNodeMethod())
               .addMethod(getGetJobMethod())
+              .addMethod(getAddJobMethod())
               .build();
         }
       }

@@ -19,7 +19,7 @@ spring:
     timeout: 10000ms
 
 mybatis:
-  type-aliases-package: com.choi.elasticjob.pojo
+  type-aliases-package: com.choi.pojo
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
