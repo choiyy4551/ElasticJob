@@ -1,0 +1,66 @@
+syntax = "proto3";
+package com.choi.service;
+option java_multiple_files = true;
+option java_package = "com.choi.grpc";
+option java_outer_classname = "grpcService";
+
+service ElasticJobService {
+  rpc RegisterNode(RegisterNodeRequest) returns (RegisterNodeReply) {}
+  rpc DeregisterNode(DeregisterNodeRequest) returns (DeregisterNodeReply) {}
+  rpc GetJob(JobRequest) returns (JobReply) {}
+  rpc AddJob(AddJobRequest) returns (AddJobReply) {}
+}
+
+message RegisterNodeRequest {
+  string nodeId = 1;
+  string resources = 2;
+  string maxParallel = 3;
+}
+
+message RegisterNodeReply {
+  ErrorCode err = 1;
+}
+
+message GrpcJobInfo {
+  string id = 1;
+  string name = 2;
+  string param = 3;
+}
+message JobRequest {
+  string nodeId = 1;
+  string resource = 2;
+  string parallelJobNum = 3;
+}
+
+message JobReply {
+  GrpcJobList grpcJobList = 1;
+  ErrorCode err = 2;
+}
+
+message GrpcJobList {
+  repeated GrpcJobInfo grpcJobInfo = 1;
+}
+
+message DeregisterNodeReply {
+  ErrorCode err = 1;
+}
+
+message DeregisterNodeRequest {
+  string nodeId = 1;
+}
+
+message AddJobRequest {
+  string name = 1;
+  string param = 2;
+  string scheduleType = 3;
+  string scheduleParam = 4;
+}
+
+message AddJobReply {
+  ErrorCode err = 1;
+}
+
+message ErrorCode {
+  string code = 1;
+  string message = 2;
+}
