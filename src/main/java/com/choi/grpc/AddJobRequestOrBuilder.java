@@ -11,7 +11,7 @@ public interface AddJobRequestOrBuilder extends
    * <code>string name = 1;</code>
    * @return The name.
    */
-  java.lang.String getName();
+  String getName();
   /**
    * <code>string name = 1;</code>
    * @return The bytes for name.
@@ -23,7 +23,7 @@ public interface AddJobRequestOrBuilder extends
    * <code>string param = 2;</code>
    * @return The param.
    */
-  java.lang.String getParam();
+  String getParam();
   /**
    * <code>string param = 2;</code>
    * @return The bytes for param.
@@ -35,7 +35,7 @@ public interface AddJobRequestOrBuilder extends
    * <code>string scheduleType = 3;</code>
    * @return The scheduleType.
    */
-  java.lang.String getScheduleType();
+  String getScheduleType();
   /**
    * <code>string scheduleType = 3;</code>
    * @return The bytes for scheduleType.
@@ -47,7 +47,7 @@ public interface AddJobRequestOrBuilder extends
    * <code>string scheduleParam = 4;</code>
    * @return The scheduleParam.
    */
-  java.lang.String getScheduleParam();
+  String getScheduleParam();
   /**
    * <code>string scheduleParam = 4;</code>
    * @return The bytes for scheduleParam.

@@ -1,31 +1,34 @@
 package com.choi.service;
 
-import com.choi.config.ThreadPoolConfig;
 import com.choi.pojo.Configuration;
 import com.choi.pojo.JobInfo;
 import com.choi.service.client.SlaveJobHandler;
 import com.choi.service.client.SlaveNode;
 import com.choi.service.server.MasterNode;
 import com.choi.utils.MyUUID;
-import com.choi.utils.RedisUtils;
 import lombok.Data;
-import org.checkerframework.checker.units.qual.A;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.JedisCluster;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 @Data
 @Service
 public class Node {
-    private boolean hasLock;
+    private boolean hasLock = false;
     private Configuration configuration;
     private boolean shutDown;
     @Autowired
-    private RedisUtils redisUtils;
+    private JedisCluster jedisCluster;
+    @Autowired
+    private RedissonClient redissonClient;
     @Autowired
     private MasterNode masterNode;
     @Autowired
@@ -38,36 +41,31 @@ public class Node {
     @Autowired
     private MyUUID myUUID;
     private String nodeId;
-    private final BlockingQueue<JobInfo> queue = new ArrayBlockingQueue<>(configuration.getMaxParallel());
+    private Node node = this;
+    private BlockingQueue<JobInfo> queue;
+    private boolean statusChange = true;
     public void start(Configuration configuration) {
         this.configuration = configuration;
         nodeId = myUUID.createUUID();
         shutDown = false;
-        //创建获取集群锁的线程
-        taskExecutor.submit(new GetLock());
         masterNode.setConfiguration(configuration);
         slaveNode.setConfiguration(configuration);
+        queue = new ArrayBlockingQueue<>(configuration.getMaxParallel());
+        //创建获取集群锁的线程
+        taskExecutor.submit(new GetLock());
+        taskExecutor.submit(new ChangeStatus());
     }
     public void stop() {
         shutDown = true;
-        slaveNode.setSlaveShutdown(true);
-    }
-    public void statusChanged() {
-        if (hasLock) {
-            //变成主节点
-            masterNode.start();
-            slaveNode.stop();
-        } else {
-            //变成从节点
-            masterNode.stop();
-            slaveNode.start(queue);
-        }
+        slaveNode.stop();
     }
     //只有主节点才能添加任务，从节点只能将任务信息转发给主节点
     public boolean addJob(JobInfo jobInfo) {
         if (hasLock) {
+            System.out.println("主节点添加任务");
             return masterNode.addJob(jobInfo);
         } else {
+            System.out.println("从节点添加任务");
             return slaveNode.addJob(jobInfo);
         }
     }
@@ -76,31 +74,47 @@ public class Node {
         @Override
         public void run() {
             String clusterName = configuration.getClusterName();
-            String host = configuration.getIp() + ":" + configuration.getPort();
-            long expireMs = 10000;
-            boolean jud;
             while (!shutDown) {
+                RLock lock = redissonClient.getLock(clusterName);
                 if (hasLock) {
-                    jud = redisUtils.setAndExpire(clusterName, 10000, host);
-                    if (!jud) {
-                        jud = redisUtils.setAndExpire(clusterName, 10000, host);
-                        if (!jud) {
+                    boolean isLock;
+                    try {
+                        isLock = lock.tryLock(1, 10, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (!isLock) {
+                        //失去锁
+                        hasLock = false;
+                        statusChange = true;
+                        System.out.println("状态改变1");
+                    } else {
+                        //获得锁则对锁时长更新
+                        try {
+                            isLock = lock.tryLock(1, 10, TimeUnit.SECONDS);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        //若延长锁失败，则变为从节点
+                        if (!isLock) {
                             hasLock = false;
-                            //主从节点转换
-                            statusChanged();
+                            statusChange = true;
+                            System.out.println("状态改变2");
                         }
                     }
                 }
                 else {
-                    //可能有错
-                    //集群锁还没被占有
-                    if (redisUtils.get(clusterName) == null || redisUtils.get(clusterName).isEmpty()) {
-                        jud = redisUtils.setAndExpire(clusterName, expireMs, host);
-                        if (jud) {
-                            hasLock = true;
-                            //主从节点转换
-                            statusChanged();
-                        }
+                    boolean isLock;
+                    try {
+                        isLock = lock.tryLock(1, 10, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (isLock) {
+                        //获得锁,变为主节点
+                        hasLock = true;
+                        statusChange = true;
+                        System.out.println("获得锁");
                     }
                 }
                 //线程短暂休眠，避免redis锁竞争过于激烈
@@ -108,6 +122,33 @@ public class Node {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+    private class ChangeStatus implements Runnable {
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            while (!shutDown) {
+                if (statusChange) {
+                    System.out.println("!");
+                    if (hasLock) {
+                        System.out.println("变成主节点");
+                        //变成主节点
+                        slaveNode.stop();
+                        masterNode.start();
+                    } else {
+                        System.out.println("变成子节点");
+                        //变成从节点
+                        masterNode.stop();
+                        slaveNode.start(queue, node);
+                    }
+                    statusChange = false;
                 }
             }
         }

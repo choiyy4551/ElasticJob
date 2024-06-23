@@ -11,7 +11,7 @@ public interface GrpcJobInfoOrBuilder extends
    * <code>string id = 1;</code>
    * @return The id.
    */
-  java.lang.String getId();
+  String getId();
   /**
    * <code>string id = 1;</code>
    * @return The bytes for id.
@@ -23,7 +23,7 @@ public interface GrpcJobInfoOrBuilder extends
    * <code>string name = 2;</code>
    * @return The name.
    */
-  java.lang.String getName();
+  String getName();
   /**
    * <code>string name = 2;</code>
    * @return The bytes for name.
@@ -35,7 +35,7 @@ public interface GrpcJobInfoOrBuilder extends
    * <code>string param = 3;</code>
    * @return The param.
    */
-  java.lang.String getParam();
+  String getParam();
   /**
    * <code>string param = 3;</code>
    * @return The bytes for param.

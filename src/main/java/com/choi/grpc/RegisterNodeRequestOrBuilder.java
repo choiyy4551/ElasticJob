@@ -11,7 +11,7 @@ public interface RegisterNodeRequestOrBuilder extends
    * <code>string nodeId = 1;</code>
    * @return The nodeId.
    */
-  java.lang.String getNodeId();
+  String getNodeId();
   /**
    * <code>string nodeId = 1;</code>
    * @return The bytes for nodeId.
@@ -23,7 +23,7 @@ public interface RegisterNodeRequestOrBuilder extends
    * <code>string resources = 2;</code>
    * @return The resources.
    */
-  java.lang.String getResources();
+  String getResources();
   /**
    * <code>string resources = 2;</code>
    * @return The bytes for resources.
@@ -35,7 +35,7 @@ public interface RegisterNodeRequestOrBuilder extends
    * <code>string maxParallel = 3;</code>
    * @return The maxParallel.
    */
-  java.lang.String getMaxParallel();
+  String getMaxParallel();
   /**
    * <code>string maxParallel = 3;</code>
    * @return The bytes for maxParallel.

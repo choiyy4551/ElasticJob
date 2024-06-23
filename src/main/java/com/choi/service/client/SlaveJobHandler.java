@@ -1,18 +1,18 @@
 package com.choi.service.client;
 
 import com.choi.Enums.JobStatusEnum;
-import com.choi.config.ThreadPoolConfig;
 import com.choi.mapper.JobMapper;
 import com.choi.mapper.JobResultMapper;
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.JobResult;
-import com.choi.service.Node;
+import com.choi.utils.DateUtil;
 import com.choi.utils.ScheduleTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 
 @Component
@@ -21,34 +21,35 @@ public class SlaveJobHandler implements SlaveService{
     private JobMapper jobMapper;
     @Autowired
     private JobResultMapper jobResultMapper;
-    @Autowired
-    private Node node;
     @Qualifier("taskExecutor")
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
     @Autowired
     private ScheduleTime scheduleTime;
-    @Autowired
-    private SlaveNode slaveNode;
-    private final String nodeId = node.getNodeId();
-
-    public void start(BlockingQueue<JobInfo> queue) {
+    private String nodeId;
+    private boolean shutDown = true;
+    public void start(BlockingQueue<JobInfo> queue, String nodeId) {
+        this.nodeId = nodeId;
+        shutDown = false;
         Consumer consumer = new Consumer(queue);
         taskExecutor.submit(consumer);
     }
-
+    public void stop() {
+        shutDown = true;
+    }
     @Override
     public boolean runJob(JobInfo jobInfo) {
         //
+        System.out.println("任务执行");
         return true;
     }
     private void setStartTime(JobResult jobResult) {
-        jobResult.setStartTime(scheduleTime.Now());
+        jobResult.setStartTime(DateUtil.CSTToDate(scheduleTime.Now().toString()));
         jobResult.setJobStatus(JobStatusEnum.Doing.getValue());
         jobResultMapper.setJobStatus(JobStatusEnum.Doing.getValue(), jobResult.getUuid());
     }
     private void setFinishTime(JobResult jobResult) {
-        jobResult.setFinishTime(scheduleTime.Now());
+        jobResult.setFinishTime(DateUtil.CSTToDate(scheduleTime.Now().toString()));
     }
     private void deleteJudge(JobInfo jobInfo) {
         switch (jobInfo.getScheduleType()) {
@@ -74,9 +75,9 @@ public class SlaveJobHandler implements SlaveService{
         }
         @Override
         public void run() {
-            try {
-                //消费者模型，take()会自动唤醒生产者
-                while (!slaveNode.isSlaveShutdown()) {
+            while (!shutDown) {
+                try {
+                    //消费者模型，take()会自动唤醒生产者
                     JobInfo jobInfo = queue.take();
                     JobResult jobResult = jobResultMapper.getJobResultById(jobInfo.getUuid());
                     setStartTime(jobResult);
@@ -87,15 +88,16 @@ public class SlaveJobHandler implements SlaveService{
                     else
                         jobResult.setJobStatus(JobStatusEnum.Failed.getValue());
                     setFinishTime(jobResult);
-                    jobInfo.setLastRunTime(scheduleTime.Now());
+                    jobResult.setResult("success");
+                    jobInfo.setLastRunTime(scheduleTime.Now().toString());
+                    jobMapper.setLastRunTime(DateUtil.CSTToDate(jobInfo.getLastRunTime()), jobInfo.getUuid());
                     //log
-
+                    jobResultMapper.updateJobResult(jobResult);
                     //run完之后判断任务的类型，看看是否要被删除
                     deleteJudge(jobInfo);
-                    jobResultMapper.updateJobResult(jobResult);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
         }
     }

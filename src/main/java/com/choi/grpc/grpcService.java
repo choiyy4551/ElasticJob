@@ -77,7 +77,7 @@ public final class grpcService {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    java.lang.String[] descriptorData = {
+    String[] descriptorData = {
       "\n\020ElasticJob.proto\022\020com.choi.service\"M\n\023" +
       "RegisterNodeRequest\022\016\n\006nodeId\030\001 \001(\t\022\021\n\tr" +
       "esources\030\002 \001(\t\022\023\n\013maxParallel\030\003 \001(\t\"=\n\021R" +
@@ -118,67 +118,67 @@ public final class grpcService {
     internal_static_com_choi_service_RegisterNodeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_RegisterNodeRequest_descriptor,
-        new java.lang.String[] { "NodeId", "Resources", "MaxParallel", });
+        new String[] { "NodeId", "Resources", "MaxParallel", });
     internal_static_com_choi_service_RegisterNodeReply_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_com_choi_service_RegisterNodeReply_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_RegisterNodeReply_descriptor,
-        new java.lang.String[] { "Err", });
+        new String[] { "Err", });
     internal_static_com_choi_service_GrpcJobInfo_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_com_choi_service_GrpcJobInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_GrpcJobInfo_descriptor,
-        new java.lang.String[] { "Id", "Name", "Param", });
+        new String[] { "Id", "Name", "Param", });
     internal_static_com_choi_service_JobRequest_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_com_choi_service_JobRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_JobRequest_descriptor,
-        new java.lang.String[] { "NodeId", "Resource", "ParallelJobNum", });
+        new String[] { "NodeId", "Resource", "ParallelJobNum", });
     internal_static_com_choi_service_JobReply_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_com_choi_service_JobReply_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_JobReply_descriptor,
-        new java.lang.String[] { "GrpcJobList", "Err", });
+        new String[] { "GrpcJobList", "Err", });
     internal_static_com_choi_service_GrpcJobList_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_com_choi_service_GrpcJobList_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_GrpcJobList_descriptor,
-        new java.lang.String[] { "GrpcJobInfo", });
+        new String[] { "GrpcJobInfo", });
     internal_static_com_choi_service_DeregisterNodeReply_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_com_choi_service_DeregisterNodeReply_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_DeregisterNodeReply_descriptor,
-        new java.lang.String[] { "Err", });
+        new String[] { "Err", });
     internal_static_com_choi_service_DeregisterNodeRequest_descriptor =
       getDescriptor().getMessageTypes().get(7);
     internal_static_com_choi_service_DeregisterNodeRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_DeregisterNodeRequest_descriptor,
-        new java.lang.String[] { "NodeId", });
+        new String[] { "NodeId", });
     internal_static_com_choi_service_AddJobRequest_descriptor =
       getDescriptor().getMessageTypes().get(8);
     internal_static_com_choi_service_AddJobRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_AddJobRequest_descriptor,
-        new java.lang.String[] { "Name", "Param", "ScheduleType", "ScheduleParam", });
+        new String[] { "Name", "Param", "ScheduleType", "ScheduleParam", });
     internal_static_com_choi_service_AddJobReply_descriptor =
       getDescriptor().getMessageTypes().get(9);
     internal_static_com_choi_service_AddJobReply_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_AddJobReply_descriptor,
-        new java.lang.String[] { "Err", });
+        new String[] { "Err", });
     internal_static_com_choi_service_ErrorCode_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_com_choi_service_ErrorCode_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_choi_service_ErrorCode_descriptor,
-        new java.lang.String[] { "Code", "Message", });
+        new String[] { "Code", "Message", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

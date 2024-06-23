@@ -28,7 +28,7 @@ public class JobController {
         JobInfo jobInfo = new JobInfo();
         jobInfo.setName(map.get("name"));
         jobInfo.setParam(map.get("param"));
-        jobInfo.setScheduleParam(map.get("scheduleType"));
+        jobInfo.setScheduleType(map.get("scheduleType"));
         jobInfo.setScheduleParam(map.get("scheduleParam"));
         if (node.addJob(jobInfo)) {
             return Result.success(CodeEnum.ADD_JOB_SUCCESS);
@@ -37,6 +37,7 @@ public class JobController {
     }
     @RequestMapping("/GetAllJobs")
     public Result<Object> getAllJobs() {
+        System.out.println("");
         List<JobInfo> jobList = jobMapper.getAllJob();
         if (jobList.isEmpty()) {
             return Result.failure(null);

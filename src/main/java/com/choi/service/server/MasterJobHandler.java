@@ -1,26 +1,19 @@
 package com.choi.service.server;
 
 import com.choi.Enums.JobStatusEnum;
-import com.choi.Enums.ScheduleType;
-import com.choi.config.ThreadPoolConfig;
 import com.choi.mapper.JobMapper;
 import com.choi.mapper.JobResultMapper;
 import com.choi.pojo.*;
-import com.choi.service.Node;
+import com.choi.utils.DateUtil;
 import com.choi.utils.MyUUID;
 import com.choi.utils.ScheduleTime;
 import com.choi.utils.StringAndInteger;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 @Component
-public class MasterJobHandler{
+public class MasterJobHandler {
     @Autowired
     private JobMapper jobMapper;
     @Autowired
@@ -29,26 +22,30 @@ public class MasterJobHandler{
     private ScheduleTime scheduleTime;
     @Autowired
     private MyUUID myUUID;
-    @Autowired
-    private Node node;
+    private boolean shutDown = true;
+    private int runningJobSize = 0;
     private final List<JobTimeInfo> runningJob = new ArrayList<>();
     private final PriorityQueue<JobTimeInfo> waitingJob = new PriorityQueue<>();
     private final List<JobTimeInfo> preparedJob = new ArrayList<>();
     private final Map<String, JobTimeInfo> jobTimes = new HashMap<>();
-
     private final Map<String, JobResult> jobResultMap = new HashMap<>();
 
     public void start() {
+        shutDown = false;
         setJobTime();
     }
 
     public void stop() {
         //设置shutdown回收线程
-       node.setShutDown(true);
+       shutDown = true;
     }
     public void setJobTime() {
         //只有启动时从数据库中重新读取一遍任务
         List<JobInfo> jobInfoList = jobMapper.getAllJob();
+        if (jobInfoList.isEmpty()) {
+            System.out.println("数据库中没有剩余任务");
+            return;
+        }
         List<JobResult> jobResultList = jobResultMapper.getAllJobResult();
         for (JobResult jobResult : jobResultList) {
             jobResultMap.put(jobResult.getUuid(), jobResult);
@@ -57,7 +54,7 @@ public class MasterJobHandler{
             JobTimeInfo jobTimeInfo = createJobTimeInfo(jobinfo);
             jobTimes.put(jobTimeInfo.getJobInfo().getUuid(), jobTimeInfo);
             if (jobinfo.getScheduleType().equals("Daily")) {
-                Date lastRunTime = jobinfo.getLastRunTime();
+                Date lastRunTime = DateUtil.DateToCST(jobinfo.getLastRunTime());
                 if (lastRunTime != null) {
                     Date date = scheduleTime.GetNextScheduleTime(jobinfo);
                     long timeDiff = lastRunTime.getTime() - date.getTime();
@@ -84,35 +81,35 @@ public class MasterJobHandler{
                         moveToPrepared(jobTimeInfo);
                     }
                     break;
-                    default:
-                        moveToRunning(jobTimeInfo);
+                    default: {
+                        if (runningJobSize > 0 && runningJob.size() < runningJobSize)
+                            moveToRunning(jobTimeInfo);
+                        else
+                            moveToPrepared(jobTimeInfo);
+                    }
                 }
+            } else {
+                JobResult jobResult = new JobResult();
+                jobResult.setUuid(jobinfo.getUuid());
+                jobResult.setName(jobinfo.getName());
+                jobResultMapper.addResult(jobResult);
+                moveToWaiting(jobTimeInfo);
             }
-            JobResult jobResult = new JobResult();
-            jobResult.setUuid(jobinfo.getUuid());
-            jobResult.setName(jobinfo.getName());
-            jobResultMapper.addResult(jobResult);
-            moveToWaiting(jobTimeInfo);
         }
     }
 
     //将waiting队列中RunTime到达的任务添加到prepared中
     public void timeCheck() {
-        if (waitingJob.isEmpty())
-            return;
-        Date runTime = waitingJob.peek().getRunTime();
-        Date nowTime = scheduleTime.Now();
-        while (runTime.after(nowTime) || runTime.equals(nowTime)) {
-            moveToPrepared(waitingJob.poll());
-            if (waitingJob.isEmpty()) {
-                //log 没有任务了
-                return ;
+        if (!waitingJob.isEmpty()) {
+            Date runTime = waitingJob.peek().getRunTime();
+            Date nowTime = scheduleTime.Now();
+            System.out.println(runTime + " ! " + nowTime);
+            if (runTime.before(nowTime) || runTime.equals(nowTime)) {
+                moveToPrepared(waitingJob.poll());
             }
-            runTime = waitingJob.peek().getRunTime();
-            nowTime = scheduleTime.Now();
         }
         //检查一下runningJob队列中的任务是否已经执行完成
-        for (int i = 0; i < runningJob.size(); i++) {
+        for (int i = 0; i < runningJobSize; i++) {
             JobTimeInfo jobTimeInfo = runningJob.get(i);
             String uuid = jobTimeInfo.getJobInfo().getUuid();
             switch (jobResultMapper.getJobStatus(uuid)) {
@@ -147,18 +144,21 @@ public class MasterJobHandler{
         }
     }
     public void moveToPrepared(JobTimeInfo jobTimeInfo) {
+        System.out.println("任务" + jobTimeInfo.getJobInfo().getName() + "添加到准备队列" + "执行时间为" + jobTimeInfo.getRunTime());
         preparedJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Prepared);
         jobResultMapper.setJobStatus(JobStatusEnum.Prepared.getValue(), jobTimeInfo.getJobInfo().getUuid());
     }
 
     public void moveToRunning(JobTimeInfo jobTimeInfo) {
+        System.out.println("任务" + jobTimeInfo.getJobInfo().getName() + "添加到运行队列" + "执行时间为" + jobTimeInfo.getRunTime());
         runningJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Pending);
         jobResultMapper.setJobStatus(JobStatusEnum.Pending.getValue(), jobTimeInfo.getJobInfo().getUuid());
     }
 
     public void moveToWaiting(JobTimeInfo jobTimeInfo) {
+        System.out.println("任务" + jobTimeInfo.getJobInfo().getName() + "添加到等待队列" + "执行时间为" + jobTimeInfo.getRunTime());
         waitingJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Waiting);
         jobResultMapper.setJobStatus(JobStatusEnum.Waiting.getValue(), jobTimeInfo.getJobInfo().getUuid());
@@ -190,6 +190,10 @@ public class MasterJobHandler{
             }
             JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
             jobTimes.put(jobInfo.getUuid(), jobTimeInfo);
+            JobResult jobResult = new JobResult();
+            jobResult.setUuid(jobInfo.getUuid());
+            jobResult.setName(jobInfo.getName());
+            jobResultMapper.addResult(jobResult);
             moveToWaiting(jobTimeInfo);
         }
     }
@@ -209,6 +213,7 @@ public class MasterJobHandler{
                 jobInfos.add(jobInfo);
                 moveToRunning(jobTimeInfo);
                 preparedJob.remove(jobTimeInfo);
+                count++;
                 continue;
             }
             break;
@@ -221,12 +226,25 @@ public class MasterJobHandler{
         jobTimeInfo.setRunTime(scheduleTime.GetNextScheduleTime(jobInfo));
         return jobTimeInfo;
     }
+    public void addRunningJobSize(int maxParallel) {
+        System.out.println("runningJobSize增加");
+        runningJobSize += maxParallel;
+    }
+    public void minusRunningJobSize(int maxParallel) {
+        System.out.println("runningJobSize减少");
+        runningJobSize -= maxParallel;
+    }
     class changeJob implements Runnable {
         @Override
         public void run() {
             //记得关闭
-            while (!node.isShutDown()) {
+            while (!shutDown) {
                 timeCheck();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

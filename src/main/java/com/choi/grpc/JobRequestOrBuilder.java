@@ -11,7 +11,7 @@ public interface JobRequestOrBuilder extends
    * <code>string nodeId = 1;</code>
    * @return The nodeId.
    */
-  java.lang.String getNodeId();
+  String getNodeId();
   /**
    * <code>string nodeId = 1;</code>
    * @return The bytes for nodeId.
@@ -23,7 +23,7 @@ public interface JobRequestOrBuilder extends
    * <code>string resource = 2;</code>
    * @return The resource.
    */
-  java.lang.String getResource();
+  String getResource();
   /**
    * <code>string resource = 2;</code>
    * @return The bytes for resource.
@@ -35,7 +35,7 @@ public interface JobRequestOrBuilder extends
    * <code>string parallelJobNum = 3;</code>
    * @return The parallelJobNum.
    */
-  java.lang.String getParallelJobNum();
+  String getParallelJobNum();
   /**
    * <code>string parallelJobNum = 3;</code>
    * @return The bytes for parallelJobNum.

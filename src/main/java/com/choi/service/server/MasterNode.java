@@ -1,15 +1,13 @@
 package com.choi.service.server;
 
-import com.choi.config.ThreadPoolConfig;
 import com.choi.grpc.*;
-import com.choi.grpc.ElasticJobServiceGrpc;
 import com.choi.grpc.GrpcJobInfo;
 import com.choi.mapper.JobMapper;
 import com.choi.mapper.JobResultMapper;
 import com.choi.pojo.*;
 import com.choi.pojo.JobInfo;
-import com.choi.service.Node;
 import com.choi.utils.MyUUID;
+import com.choi.utils.StringAndInteger;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
@@ -18,41 +16,53 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.JedisCluster;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
 @Data
-public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase implements MasterService{
+public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase implements MasterService, Runnable{
     private Server server;
-    private final int port = 4551;
     private Configuration configuration;
+    private boolean shutDown = true;
     @Qualifier("taskExecutor")
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
+    @Autowired
+    private JedisCluster jedisCluster;
     @Autowired
     private MasterJobHandler masterJobHandler;
     @Autowired
     private MyUUID myUUID;
     @Autowired
-    private Node node;
-    @Autowired
     private JobMapper jobMapper;
     @Autowired
     private JobResultMapper jobResultMapper;
+    private final int port = 4551;
     private final HashMap<String, NodeInfo> nodes = new HashMap<>();
     public void start() {
         try {
+            System.out.println("我是领导!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            shutDown = false;
+            //开启服务并向集群中写入ip:port信息
             server = ServerBuilder.forPort(port).addService(new GrpcMethods()).build().start();
+            jedisCluster.set("host", configuration.getIp() + ":" + configuration.getPort());
+            masterJobHandler.start();
             //开启线程对任务队列分配
             taskExecutor.submit(masterJobHandler.new changeJob());
-            masterJobHandler.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public void stop() {
+        if (server != null) {
+            server.shutdown();
+            masterJobHandler.stop();
+        }
+        shutDown = true;
     }
     @Override
     public boolean addJob(JobInfo jobInfo) {
@@ -94,13 +104,21 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
     private List<JobInfo> divideJob(String resources, String maxParallel) {
         return masterJobHandler.divideJob(resources, maxParallel);
     }
+
+    @Override
+    public void run() {
+        while (!shutDown) {
+
+        }
+    }
+
     private class GrpcMethods extends ElasticJobServiceGrpc.ElasticJobServiceImplBase {
         @Override
         public void registerNode(RegisterNodeRequest request, StreamObserver<RegisterNodeReply> responseObserver) {
             ErrorCode errorCode;
             RegisterNodeReply registerNodeReply;
             //后续可以让slave节点转发消息
-            if (!node.isHasLock()) {
+            if (shutDown) {
                 errorCode = ErrorCode.newBuilder().setCode("MasterErr").setMessage("I am not Master").build();
                 registerNodeReply = RegisterNodeReply.newBuilder().setErr(errorCode).build();
                 responseObserver.onNext(registerNodeReply);
@@ -131,9 +149,10 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
                 responseObserver.onCompleted();
                 return;
             }
-            if (registerJudge(nodeId)) {
+            if (!nodes.containsKey(nodeId)) {
                 NodeInfo nodeInfo = new NodeInfo(nodeId, resources, Integer.parseInt(maxParallel));
                 nodes.put(nodeId, nodeInfo);
+                masterJobHandler.addRunningJobSize(StringAndInteger.StringToInteger(maxParallel));
                 errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("register successfully").build();
                 registerNodeReply = RegisterNodeReply.newBuilder().setErr(errorCode).build();
                 responseObserver.onNext(registerNodeReply);
@@ -151,7 +170,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         public void deregisterNode(DeregisterNodeRequest request, StreamObserver<DeregisterNodeReply> responseObserver) {
             ErrorCode errorCode;
             DeregisterNodeReply deregisterNodeReply;
-            if (!node.isHasLock()) {
+            if (shutDown) {
                 errorCode = ErrorCode.newBuilder().setCode("MasterErr").setMessage("I am not Master").build();
                 deregisterNodeReply = DeregisterNodeReply.newBuilder().setErr(errorCode).build();
                 responseObserver.onNext(deregisterNodeReply);
@@ -167,6 +186,8 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
                 return;
             }
             if (nodes.containsKey(nodeId)) {
+                NodeInfo nodeInfo = nodes.get(nodeId);
+                masterJobHandler.minusRunningJobSize(nodeInfo.getMaxParallel());
                 nodes.remove(nodeId);
                 errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("success").build();
                 deregisterNodeReply = DeregisterNodeReply.newBuilder().setErr(errorCode).build();
@@ -184,7 +205,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         public void getJob(JobRequest request, StreamObserver<JobReply> responseObserver) {
             ErrorCode errorCode;
             JobReply jobReply;
-            if (!node.isHasLock()) {
+            if (shutDown) {
                 errorCode = ErrorCode.newBuilder().setCode("MasterErr").setMessage("I am not Master").build();
                 jobReply = JobReply.newBuilder().setErr(errorCode).build();
                 responseObserver.onNext(jobReply);
@@ -216,6 +237,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
                         return;
                     }
                     //分配任务
+                    System.out.println("主节点分配任务");
                     List<JobInfo> jobInfoList = divideJob(resource, maxParallel);
                     errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("success").build();
                     GrpcJobList.Builder grpcJobList = GrpcJobList.newBuilder();
@@ -236,7 +258,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         public void addJob(AddJobRequest request, StreamObserver<AddJobReply> responseObserver) {
             ErrorCode errorCode;
             AddJobReply addJobReply;
-            if (!node.isHasLock()) {
+            if (shutDown) {
                 errorCode = ErrorCode.newBuilder().setCode("MasterErr").setMessage("I am not Master").build();
                 addJobReply = AddJobReply.newBuilder().setErr(errorCode).build();
                 responseObserver.onNext(addJobReply);
@@ -264,12 +286,5 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
 
     private boolean registerJudge(String nodeId) {
         return !nodes.containsKey(nodeId);
-    }
-
-    public void stop() {
-        if (server != null) {
-            server.shutdown();
-            masterJobHandler.stop();
-        }
     }
 }

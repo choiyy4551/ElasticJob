@@ -15,7 +15,7 @@ public interface JobMapper {
      * @param jobInfo 任务信息
      * @return boolean
      */
-    @Insert("insert into atonce_job(uuid, name, param, deletestatus)" +
+    @Insert("insert into atonce_job(uuid, name, param, deleteStatus)" +
             "values (#{uuid}, #{name}, #{param}, #{deleteStatus})")
     boolean addAtOnceJob(JobInfo jobInfo);
 
@@ -24,7 +24,7 @@ public interface JobMapper {
      * @param jobInfo 任务信息
      * @return boolean
      */
-    @Insert("insert into daily_job(uuid, name, param, scheduleparam, deletestatus)" +
+    @Insert("insert into daily_job(uuid, name, param, scheduleParam, deleteStatus)" +
             "values (#{uuid}, #{name}, #{param}, #{scheduleParam}, #{deleteStatus})")
     boolean addDailyJob(JobInfo jobInfo);
 
@@ -33,33 +33,34 @@ public interface JobMapper {
      * @param jobInfo 任务信息
      * @return boolean
      */
-    @Insert("insert into time_Job(uuid, name, param, scheduleparam, deletestatus)" +
+    @Insert("insert into time_Job(uuid, name, param, scheduleParam, deleteStatus)" +
             "values (#{uuid}, #{name}, #{param}, #{scheduleParam}, #{deleteStatus})")
     boolean addTimeJob(JobInfo jobInfo);
 
-    @Insert("insert into JobInfo(uuid, name, param, lastRunTime,scheduleType, scheduleParam, deleteStatus)" +
-            "values (#{uuid}, #{name}, #{param},#{lastRunTime}, #{scheduleType}, #{scheduleParam}, #{deleteStatus})")
+    @Insert("insert into jobinfo(uuid, name, param,scheduleType, scheduleParam)" +
+            "values (#{uuid}, #{name}, #{param}, #{scheduleType}, #{scheduleParam})")
     boolean addJobInfo(JobInfo jobInfo);
-    @Update("update JobInfo set name = #{name}, param = #{param}, scheduleParam = #{scheduleType}, deleteStatus = #{deleteStatus} where uuid = #{uuid}")
+    @Update("update jobinfo set name = #{name}, param = #{param}, scheduleType = #{scheduleType}., scheduleParam = #{scheduleParam}, where uuid = #{uuid}")
     boolean updateJobInfo(JobInfo jobInfo);
-    @Select("select * from JobInfo where deleteStatus = 0")
+    @Select("select * from jobinfo where deleteStatus = 0")
     List<JobInfo> getAllJob();
-    @Select("select * from JobInfo where name = #{name} and deleteStatus = 0 limit 1")
+    @Select("select * from jobinfo where name = #{name} and deleteStatus = 0 limit 1")
     JobInfo getJobByName(String name);
-    @Select("select * from JobInfo where uuid = #{uuid}")
+    @Select("select * from jobinfo where uuid = #{uuid}")
     JobInfo getJobById(String uuid);
-    @Update("update JobInfo set deleteStatus = 0 where uuid = #{uuid}")
+    @Update("update jobinfo set lastRunTime = #{lastRunTime} where uuid = #{uuid}")
+    boolean setLastRunTime(@Param("lastRunTime")String lastRunTime,@Param("uuid")String uuid);
+    @Update("update jobinfo set deleteStatus = 0 where uuid = #{uuid}")
     boolean startJob(String uuid);
-    @Update("update JobInfo set deleteStatus = 1 where uuid = #{uuid}")
+    @Update("update jobinfo set deleteStatus = 1 where uuid = #{uuid}")
     boolean stopJob(String uuid);
-    @Select("select * from time_job where deletestatus = 0")
+
+
+
+    @Select("select * from time_job where deleteStatus = 0")
     List<TimeJob> getAllTimeJob();
-
-    @Select("select * from daily_job where deletestatus = 0")
+    @Select("select * from daily_job where deleteStatus = 0")
     List<DailyJob> getAllDailyJob();
-
-    @Select("select * from job_result where finishtime is null or finishtime = 0")
-    List<JobResult> getUnfinishedJob();
-    @Select("select * from atonce_job where deletestatus = 0")
+    @Select("select * from atonce_job where deleteStatus = 0")
     List<AtOnceJob> getAllAtOnceJob();
 }

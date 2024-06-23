@@ -11,7 +11,7 @@ public interface DeregisterNodeRequestOrBuilder extends
    * <code>string nodeId = 1;</code>
    * @return The nodeId.
    */
-  java.lang.String getNodeId();
+  String getNodeId();
   /**
    * <code>string nodeId = 1;</code>
    * @return The bytes for nodeId.

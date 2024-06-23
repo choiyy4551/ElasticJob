@@ -16,9 +16,9 @@ public interface AddJobReplyOrBuilder extends
    * <code>.com.choi.service.ErrorCode err = 1;</code>
    * @return The err.
    */
-  com.choi.grpc.ErrorCode getErr();
+  ErrorCode getErr();
   /**
    * <code>.com.choi.service.ErrorCode err = 1;</code>
    */
-  com.choi.grpc.ErrorCodeOrBuilder getErrOrBuilder();
+  ErrorCodeOrBuilder getErrOrBuilder();
 }

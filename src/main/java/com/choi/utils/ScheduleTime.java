@@ -40,7 +40,7 @@ public class ScheduleTime {
                     if (jobInfo.getLastRunTime() == null) {
                         last.setTime(Now());
                     } else {
-                        last.setTime(jobInfo.getLastRunTime());
+                        last.setTime(new Date(jobInfo.getLastRunTime()));
                     }
                     last.add(Calendar.MINUTE, Integer.parseInt(min));
                     return last.getTime();
@@ -62,7 +62,7 @@ public class ScheduleTime {
                         last.set(year,month,day,hour,min,sec);
                     }
                     else{
-                        last.setTime(jobInfo.getLastRunTime());
+                        last.setTime(new Date(jobInfo.getLastRunTime()));
                     }
                     last.add(Calendar.DATE, 1);
                     return last.getTime();

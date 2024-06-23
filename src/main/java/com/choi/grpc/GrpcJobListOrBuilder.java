@@ -10,12 +10,12 @@ public interface GrpcJobListOrBuilder extends
   /**
    * <code>repeated .com.choi.service.GrpcJobInfo grpcJobInfo = 1;</code>
    */
-  java.util.List<com.choi.grpc.GrpcJobInfo> 
+  java.util.List<GrpcJobInfo>
       getGrpcJobInfoList();
   /**
    * <code>repeated .com.choi.service.GrpcJobInfo grpcJobInfo = 1;</code>
    */
-  com.choi.grpc.GrpcJobInfo getGrpcJobInfo(int index);
+  GrpcJobInfo getGrpcJobInfo(int index);
   /**
    * <code>repeated .com.choi.service.GrpcJobInfo grpcJobInfo = 1;</code>
    */
@@ -23,11 +23,11 @@ public interface GrpcJobListOrBuilder extends
   /**
    * <code>repeated .com.choi.service.GrpcJobInfo grpcJobInfo = 1;</code>
    */
-  java.util.List<? extends com.choi.grpc.GrpcJobInfoOrBuilder> 
+  java.util.List<? extends GrpcJobInfoOrBuilder>
       getGrpcJobInfoOrBuilderList();
   /**
    * <code>repeated .com.choi.service.GrpcJobInfo grpcJobInfo = 1;</code>
    */
-  com.choi.grpc.GrpcJobInfoOrBuilder getGrpcJobInfoOrBuilder(
+  GrpcJobInfoOrBuilder getGrpcJobInfoOrBuilder(
       int index);
 }

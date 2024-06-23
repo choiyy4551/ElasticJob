@@ -11,7 +11,7 @@ public interface ErrorCodeOrBuilder extends
    * <code>string code = 1;</code>
    * @return The code.
    */
-  java.lang.String getCode();
+  String getCode();
   /**
    * <code>string code = 1;</code>
    * @return The bytes for code.
@@ -23,7 +23,7 @@ public interface ErrorCodeOrBuilder extends
    * <code>string message = 2;</code>
    * @return The message.
    */
-  java.lang.String getMessage();
+  String getMessage();
   /**
    * <code>string message = 2;</code>
    * @return The bytes for message.

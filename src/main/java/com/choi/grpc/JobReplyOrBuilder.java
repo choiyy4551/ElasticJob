@@ -16,11 +16,11 @@ public interface JobReplyOrBuilder extends
    * <code>.com.choi.service.GrpcJobList grpcJobList = 1;</code>
    * @return The grpcJobList.
    */
-  com.choi.grpc.GrpcJobList getGrpcJobList();
+  GrpcJobList getGrpcJobList();
   /**
    * <code>.com.choi.service.GrpcJobList grpcJobList = 1;</code>
    */
-  com.choi.grpc.GrpcJobListOrBuilder getGrpcJobListOrBuilder();
+  GrpcJobListOrBuilder getGrpcJobListOrBuilder();
 
   /**
    * <code>.com.choi.service.ErrorCode err = 2;</code>
@@ -31,9 +31,9 @@ public interface JobReplyOrBuilder extends
    * <code>.com.choi.service.ErrorCode err = 2;</code>
    * @return The err.
    */
-  com.choi.grpc.ErrorCode getErr();
+  ErrorCode getErr();
   /**
    * <code>.com.choi.service.ErrorCode err = 2;</code>
    */
-  com.choi.grpc.ErrorCodeOrBuilder getErrOrBuilder();
+  ErrorCodeOrBuilder getErrOrBuilder();
 }
