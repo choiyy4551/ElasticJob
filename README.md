@@ -14,22 +14,22 @@ Elastic Job提供即时、定时和每日三种任务类型，允许用户自主
 ### 2.节点间通信
 主从节点间通信采用的是gRPC服务，考虑到gRPC优秀的性能而且可以使用Protobuf自动生成客户端和服务器端代码。
 ## 目录树
-├─src
-│ └─main
-│    └──java
-│      ├─com
-│      │  └─choi
-│      │      ├─config
-│      │      ├─controller
-│      │      ├─grpc gRPC服务
-│      │      ├─mapper
-│      │      ├─pojo
-│      │      ├─service
-│      │      │  ├─client 从节点业务
-│      │      │  └─server 主节点业务
-│      │      └─utils
-│      └─proto
-└─ README.md
+├─src                                                                                                                                                                                                                                            
+│ └─main                                                                                                                                                                                                                                         
+│    └──java                                                                                                                                                                                                                                     
+│      ├─com                                                                                                                                                                                                                                        
+│      │  └─choi                                                                                                                                                                                                                                    
+│      │      ├─config                                                                                                                                                                                                                              
+│      │      ├─controller                                                                                                                                                                                                                          
+│      │      ├─grpc gRPC服务                                                                                                                                                                                                                       
+│      │      ├─mapper                                                                                                                                                                                                                              
+│      │      ├─pojo                                                                                                                                                                                                                                
+│      │      ├─service                                                                                                                                                                                                                             
+│      │      │  ├─client 从节点业务                                               
+│      │      │  └─server 主节点业务                                                    
+│      │      └─utils                                                                               
+│      └─proto                                                                             
+└─ README.md                                                                                          
 
 
 
