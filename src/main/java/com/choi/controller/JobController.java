@@ -23,7 +23,7 @@ public class JobController {
     private JobMapper jobMapper;
     @Autowired
     private MasterNode masterNode;
-    @RequestMapping("/AddJob")
+    @RequestMapping("/addJob")
     public Result<Object> addJob(@RequestBody Map<String, String> map) {
         JobInfo jobInfo = new JobInfo();
         jobInfo.setName(map.get("name"));
@@ -35,7 +35,7 @@ public class JobController {
         }
         return Result.failure(CodeEnum.ADD_JOB_ERR);
     }
-    @RequestMapping("/GetAllJobs")
+    @RequestMapping("/getAllJobs")
     public Result<Object> getAllJobs() {
         System.out.println("");
         List<JobInfo> jobList = jobMapper.getAllJob();
@@ -44,7 +44,7 @@ public class JobController {
         }
         return Result.success(jobList);
     }
-    @RequestMapping
+    @RequestMapping("/deleteJob")
     public Result<Object> deleteJob(@RequestBody Map<String, String> map) {
         String id = map.get("id");
         if (masterNode.deleteJob(id)) {
