@@ -17,10 +17,10 @@ Elastic Job提供即时、定时和每日三种任务类型，允许用户自主
 ├─src                                                                                                                                                                                                                                            
 │ └─main                                                                                                                                                                                                                                         
 │    └──java                                                                                                                                                                                                                                     
-│      ├─com                                                                                                                                                                                                                                        
-│      │  └─choi                                                                                                                                                                                                                                    
-│      │      ├─config                                                                                                                                                                                                                              
-│      │      ├─controller                                                                                                                                                                                                                          
+│      ├─com   
+│      │  └─choi                                                                                                                                                                                                                                
+│      │      ├─config                                                                                                                                                                                                                           
+│      │      ├─controller                                                                                                                                                                                                                      
 │      │      ├─grpc gRPC服务                                                                                                                                                                                                                       
 │      │      ├─mapper                                                                                                                                                                                                                              
 │      │      ├─pojo                                                                                                                                                                                                                                
@@ -30,7 +30,3 @@ Elastic Job提供即时、定时和每日三种任务类型，允许用户自主
 │      │      └─utils                                                                               
 │      └─proto                                                                             
 └─ README.md                                                                                          
-
-
-
-
