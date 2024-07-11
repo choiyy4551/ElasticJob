@@ -63,6 +63,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
             masterJobHandler.stop();
         }
         shutDown = true;
+        System.out.println("主节点关闭");
     }
     @Override
     public boolean addJob(JobInfo jobInfo) {
@@ -237,15 +238,20 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
                         return;
                     }
                     //分配任务
-                    System.out.println("主节点分配任务");
+                    //System.out.println("主节点分配任务");
                     List<JobInfo> jobInfoList = divideJob(resource, maxParallel);
-                    errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("success").build();
-                    GrpcJobList.Builder grpcJobList = GrpcJobList.newBuilder();
-                    for (JobInfo jobInfo : jobInfoList) {
-                        com.choi.grpc.GrpcJobInfo grpcJobInfo = GrpcJobInfo.newBuilder().setId(jobInfo.getUuid()).setName(jobInfo.getName()).setParam(jobInfo.getParam()).build();
-                        grpcJobList.addGrpcJobInfo(grpcJobInfo);
+                    if (jobInfoList.isEmpty()) {
+                        errorCode = ErrorCode.newBuilder().setCode("Empty").setMessage("dont have any job").build();
+                        jobReply = JobReply.newBuilder().setErr(errorCode).build();
+                    } else {
+                        errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("success").build();
+                        GrpcJobList.Builder grpcJobList = GrpcJobList.newBuilder();
+                        for (JobInfo jobInfo : jobInfoList) {
+                            com.choi.grpc.GrpcJobInfo grpcJobInfo = GrpcJobInfo.newBuilder().setId(jobInfo.getUuid()).setName(jobInfo.getName()).setParam(jobInfo.getParam()).build();
+                            grpcJobList.addGrpcJobInfo(grpcJobInfo);
+                        }
+                        jobReply = JobReply.newBuilder().setGrpcJobList(grpcJobList).setErr(errorCode).build();
                     }
-                    jobReply = JobReply.newBuilder().setGrpcJobList(grpcJobList).setErr(errorCode).build();
                 } else {
                     errorCode = ErrorCode.newBuilder().setCode("Err").setMessage("have not registered").build();
                     jobReply = JobReply.newBuilder().setErr(errorCode).build();

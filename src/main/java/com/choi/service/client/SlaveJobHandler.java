@@ -39,7 +39,7 @@ public class SlaveJobHandler implements SlaveService{
     }
     @Override
     public boolean runJob(JobInfo jobInfo) {
-        //
+        //用户可自主实现runJob业务
         System.out.println("任务执行");
         return true;
     }
@@ -77,6 +77,7 @@ public class SlaveJobHandler implements SlaveService{
         public void run() {
             while (!shutDown) {
                 try {
+                    Thread.sleep(1000);
                     //消费者模型，take()会自动唤醒生产者
                     JobInfo jobInfo = queue.take();
                     JobResult jobResult = jobResultMapper.getJobResultById(jobInfo.getUuid());

@@ -87,7 +87,6 @@ public class Node {
                         //失去锁
                         hasLock = false;
                         statusChange = true;
-                        System.out.println("状态改变1");
                     } else {
                         //获得锁则对锁时长更新
                         try {
@@ -99,7 +98,6 @@ public class Node {
                         if (!isLock) {
                             hasLock = false;
                             statusChange = true;
-                            System.out.println("状态改变2");
                         }
                     }
                 }
@@ -114,7 +112,6 @@ public class Node {
                         //获得锁,变为主节点
                         hasLock = true;
                         statusChange = true;
-                        System.out.println("获得锁");
                     }
                 }
                 //线程短暂休眠，避免redis锁竞争过于激烈
@@ -136,7 +133,6 @@ public class Node {
             }
             while (!shutDown) {
                 if (statusChange) {
-                    System.out.println("!");
                     if (hasLock) {
                         System.out.println("变成主节点");
                         //变成主节点

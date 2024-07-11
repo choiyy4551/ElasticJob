@@ -37,7 +37,7 @@ public class MasterJobHandler {
 
     public void stop() {
         //设置shutdown回收线程
-       shutDown = true;
+        shutDown = true;
     }
     public void setJobTime() {
         //只有启动时从数据库中重新读取一遍任务
@@ -103,12 +103,14 @@ public class MasterJobHandler {
         if (!waitingJob.isEmpty()) {
             Date runTime = waitingJob.peek().getRunTime();
             Date nowTime = scheduleTime.Now();
-            System.out.println(runTime + " ! " + nowTime);
             if (runTime.before(nowTime) || runTime.equals(nowTime)) {
                 moveToPrepared(waitingJob.poll());
             }
         }
         //检查一下runningJob队列中的任务是否已经执行完成
+        if (runningJob.isEmpty()) {
+            return;
+        }
         for (int i = 0; i < runningJobSize; i++) {
             JobTimeInfo jobTimeInfo = runningJob.get(i);
             String uuid = jobTimeInfo.getJobInfo().getUuid();
@@ -144,21 +146,21 @@ public class MasterJobHandler {
         }
     }
     public void moveToPrepared(JobTimeInfo jobTimeInfo) {
-        System.out.println("任务" + jobTimeInfo.getJobInfo().getName() + "添加到准备队列" + "执行时间为" + jobTimeInfo.getRunTime());
+        System.out.println("任务 " + jobTimeInfo.getJobInfo().getName() + " 添加到准备队列" + "执行时间为" + jobTimeInfo.getRunTime());
         preparedJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Prepared);
         jobResultMapper.setJobStatus(JobStatusEnum.Prepared.getValue(), jobTimeInfo.getJobInfo().getUuid());
     }
 
     public void moveToRunning(JobTimeInfo jobTimeInfo) {
-        System.out.println("任务" + jobTimeInfo.getJobInfo().getName() + "添加到运行队列" + "执行时间为" + jobTimeInfo.getRunTime());
+        System.out.println("任务 " + jobTimeInfo.getJobInfo().getName() + " 添加到运行队列" + "执行时间为" + jobTimeInfo.getRunTime());
         runningJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Pending);
         jobResultMapper.setJobStatus(JobStatusEnum.Pending.getValue(), jobTimeInfo.getJobInfo().getUuid());
     }
 
     public void moveToWaiting(JobTimeInfo jobTimeInfo) {
-        System.out.println("任务" + jobTimeInfo.getJobInfo().getName() + "添加到等待队列" + "执行时间为" + jobTimeInfo.getRunTime());
+        System.out.println("任务 " + jobTimeInfo.getJobInfo().getName() + " 添加到等待队列" + "执行时间为" + jobTimeInfo.getRunTime());
         waitingJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Waiting);
         jobResultMapper.setJobStatus(JobStatusEnum.Waiting.getValue(), jobTimeInfo.getJobInfo().getUuid());
@@ -173,20 +175,21 @@ public class MasterJobHandler {
             jobInfo.setLastRunTime(job.getLastRunTime());
             boolean res = jobMapper.updateJobInfo(jobInfo);
             if (!res) {
-                //log
+                System.out.println("此任务已存在！");;
             }
             //所有队列中都不存在该任务则加入
             if (!jobTimes.containsKey(jobInfo.getUuid())) {
                 JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
                 jobTimes.put(jobInfo.getUuid(), jobTimeInfo);
                 moveToWaiting(jobTimeInfo);
+                System.out.println("任务添加成功！");
             }
         } else {
             String jobId = myUUID.createUUID();
             jobInfo.setUuid(jobId);
             boolean res = jobMapper.addJobInfo(jobInfo);
             if (!res) {
-                //log
+                System.out.println("任务添加失败，数据库异常！");
             }
             JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
             jobTimes.put(jobInfo.getUuid(), jobTimeInfo);
@@ -195,6 +198,7 @@ public class MasterJobHandler {
             jobResult.setName(jobInfo.getName());
             jobResultMapper.addResult(jobResult);
             moveToWaiting(jobTimeInfo);
+            System.out.println("任务添加成功！");
         }
     }
 
@@ -203,8 +207,9 @@ public class MasterJobHandler {
         int restResources = StringAndInteger.StringToInteger(resources);
         List<JobInfo> jobInfos = new ArrayList<>();
         while (count < Integer.parseInt(maxParallel)) {
-            if (preparedJob.isEmpty())
+            if (preparedJob.isEmpty()) {
                 return jobInfos;
+            }
             JobTimeInfo jobTimeInfo = preparedJob.get(0);
             JobInfo jobInfo = jobTimeInfo.getJobInfo();
             int param = StringAndInteger.StringToInteger(jobInfo.getParam());

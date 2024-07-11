@@ -13,8 +13,8 @@ public class ThreadPoolConfig {
     @Bean
     public ThreadPoolTaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(4);
-        taskExecutor.setMaxPoolSize(8);
+        taskExecutor.setCorePoolSize(8);
+        taskExecutor.setMaxPoolSize(16);
         taskExecutor.setQueueCapacity(20);
         taskExecutor.setKeepAliveSeconds(120);
         taskExecutor.setThreadNamePrefix("elasticJob-thread");

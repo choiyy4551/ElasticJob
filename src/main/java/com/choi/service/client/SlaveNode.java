@@ -50,9 +50,9 @@ public class SlaveNode {
         shutDown = false;
         this.node = node;
         register();
-        slaveJobHandler.start(queue, node.getNodeId());
         Producer producer = new Producer(queue);
         taskExecutor.submit(producer);
+        slaveJobHandler.start(queue, node.getNodeId());
     }
 
     public void stop() {
@@ -125,7 +125,7 @@ public class SlaveNode {
         String code = registerNodeReply.getErr().getCode();
         System.out.println(code);
         if ("MasterErr".equals(code)) {
-            //log
+            System.out.println("主节点信息改变");
             synchronized (object) {
                 try {
                     object.wait(5000);
@@ -140,15 +140,15 @@ public class SlaveNode {
             return register();
         }
         if ("NodeIdErr".equals(code)) {
-            //
+            System.out.println("节点NodeId为空");
             return false;
         }
         if ("ResourceErr".equals(code)) {
-            //
+            System.out.println("节点Resources信息为空");
             return false;
         }
         if ("MaxParallelErr".equals(code)) {
-            //
+            System.out.println("节点MaxParallel信息为空");
             return false;
         }
         if ("Success".equals(code)) {
@@ -157,7 +157,7 @@ public class SlaveNode {
             return true;
         }
         if ("Err".equals(code)) {
-            //
+            System.out.println("节点已注册");
             return false;
         }
         return false;
@@ -170,16 +170,14 @@ public class SlaveNode {
         DeregisterNodeReply deregisterNodeReply;
         String host = jedisCluster.get("host");
         stub = slaveStub.getBlockingStub(host);
-        System.out.println("11");
         try {
             deregisterNodeReply = stub.deregisterNode(deregisterNodeRequest);
         } catch (StatusRuntimeException e) {
             throw e;
         }
-        System.out.println("33");
         String code = deregisterNodeReply.getErr().getCode();
         if ("MasterErr".equals(code)) {
-            //
+            System.out.println("主节点信息改变");
             synchronized (object) {
                 try {
                     object.wait(5000);
@@ -195,11 +193,11 @@ public class SlaveNode {
             return register();
         }
         if ("NodeIdErr".equals(code)) {
-            //
+            System.out.println("节点NodeId为空");
             return false;
         }
         if ("Success".equals(code)) {
-            //
+            System.out.println("注销成功");
             return true;
         }
         return false;
@@ -233,16 +231,19 @@ public class SlaveNode {
             return getJob();
         }
         if ("NodeIdErr".equals(code)) {
-            //log
+            System.out.println("节点NodeId为空");
         }
         if ("ResourceErr".equals(code)) {
-            //
+            System.out.println("节点Resources为空");
         }
         if ("MaxParallelErr".equals(code)) {
-            //
+            System.out.println("节点MaxParallel为空");
+        }
+        if ("Empty".equals(code)) {
+            System.out.println("主节点没有未执行任务");
+            return jobInfoList;
         }
         if ("Success".equals(code)) {
-            System.out.println("子节点获取到任务");
             List<GrpcJobInfo> grpcJobInfoList = jobReply.getGrpcJobList().getGrpcJobInfoList();
             for (GrpcJobInfo grpcJobInfo : grpcJobInfoList) {
                 String uuid = grpcJobInfo.getId();
@@ -293,10 +294,13 @@ public class SlaveNode {
         public void run() {
             while (!shutDown) {
                 try {
+                    Thread.sleep(1000);
                     //生产者模型，阻塞队列会自动唤醒消费者
                     List<JobInfo> jobInfoList = getJobFromMaster();
-                    if (jobInfoList == null || jobInfoList.isEmpty())
-                        return;
+                    if (jobInfoList == null || jobInfoList.isEmpty()) {
+                        //System.out.println("主节点没有任务了");
+                        continue;
+                    }
                     for (JobInfo jobInfo : jobInfoList) {
                         queue.put(jobInfo);
                     }
