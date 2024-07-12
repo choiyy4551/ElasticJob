@@ -111,7 +111,7 @@ public class MasterJobHandler {
         if (runningJob.isEmpty()) {
             return;
         }
-        for (int i = 0; i < runningJobSize; i++) {
+        for (int i = 0; i < runningJob.size(); i++) {
             JobTimeInfo jobTimeInfo = runningJob.get(i);
             String uuid = jobTimeInfo.getJobInfo().getUuid();
             switch (jobResultMapper.getJobStatus(uuid)) {
@@ -128,18 +128,19 @@ public class MasterJobHandler {
                         jobResultMap.remove(uuid);
                         jobTimes.remove(uuid);
                         runningJob.remove(i);
+                        System.out.println("任务执行完成移出队列");
                         i--;
                     }
+                    break;
                 }
-                break;
                 case 3: {
                     //任务执行成功
                     jobResultMap.remove(uuid);
                     jobTimes.remove(uuid);
                     runningJob.remove(i);
                     i--;
+                    break;
                 }
-                break;
                 default:
                     break;
             }
@@ -213,7 +214,7 @@ public class MasterJobHandler {
             JobTimeInfo jobTimeInfo = preparedJob.get(0);
             JobInfo jobInfo = jobTimeInfo.getJobInfo();
             int param = StringAndInteger.StringToInteger(jobInfo.getParam());
-            if (restResources > StringAndInteger.StringToInteger(jobInfo.getParam())) {
+            if (restResources > param) {
                 restResources -= param;
                 jobInfos.add(jobInfo);
                 moveToRunning(jobTimeInfo);

@@ -21,7 +21,7 @@ public class ScheduleTime {
         }
 
         switch (jobInfo.getScheduleType()) {
-            case "One": {//立即执行
+            case "Once": {//立即执行
                 if (jobInfo.getScheduleParam() == null || jobInfo.getScheduleParam().isEmpty()) {
                     return Now();//默认现在执行
                 } else {//xx分后执行

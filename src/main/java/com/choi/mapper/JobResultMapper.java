@@ -10,8 +10,8 @@ import java.util.List;
 public interface JobResultMapper {
     @Select("select * from jobresult where uuid = #{uuid}")
     JobResult getJobResultById(String uuid);
-    @Delete("delete from jobresult where uuid = #{uuid}")
-    boolean deleteJob(String uuid);
+    @Delete("delete from jobresult where name = #{name}")
+    boolean deleteJob(String name);
     /**
      * 任务完成添加执行结果
      * @param jobResult 任务结果信息

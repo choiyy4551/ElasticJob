@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/result")
+@RequestMapping("/Result")
 public class ResultController {
     @Autowired
     private JobMapper jobMapper;

@@ -44,7 +44,7 @@ public interface JobMapper {
     boolean updateJobInfo(JobInfo jobInfo);
     @Select("select * from jobinfo where deleteStatus = 0")
     List<JobInfo> getAllJob();
-    @Select("select * from jobinfo where name = #{name} and deleteStatus = 0 limit 1")
+    @Select("select * from jobinfo where name = #{name}")
     JobInfo getJobByName(String name);
     @Select("select * from jobinfo where uuid = #{uuid}")
     JobInfo getJobById(String uuid);
@@ -54,6 +54,8 @@ public interface JobMapper {
     boolean startJob(String uuid);
     @Update("update jobinfo set deleteStatus = 1 where uuid = #{uuid}")
     boolean stopJob(String uuid);
+    @Delete("delete from jobinfo where name = #{name}")
+    boolean deleteJob(String name);
 
 
 

@@ -11,8 +11,9 @@ import org.springframework.stereotype.Component;
 @Data
 public class SlaveStub {
     private ManagedChannel channel;
-    private boolean shutDown = false;
+    private boolean shutDown = true;
     public ElasticJobServiceGrpc.ElasticJobServiceBlockingStub getBlockingStub(String host) {
+        shutDown = false;
         String ip = host.substring(0, host.indexOf(":"));
         Integer port = StringAndInteger.StringToInteger(host.substring(host.indexOf(":") +1));
         channel = ManagedChannelBuilder.forAddress(ip, 4551)
@@ -21,7 +22,8 @@ public class SlaveStub {
         return ElasticJobServiceGrpc.newBlockingStub(channel);
     }
     public void shutDown() {
-        channel.shutdown();
+        if (!shutDown)
+            channel.shutdown();
         shutDown = true;
     }
 }

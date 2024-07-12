@@ -30,6 +30,7 @@ public class JobController {
         jobInfo.setParam(map.get("param"));
         jobInfo.setScheduleType(map.get("scheduleType"));
         jobInfo.setScheduleParam(map.get("scheduleParam"));
+        System.out.println(jobInfo);
         if (node.addJob(jobInfo)) {
             return Result.success(CodeEnum.ADD_JOB_SUCCESS);
         }
@@ -37,7 +38,6 @@ public class JobController {
     }
     @RequestMapping("/getAllJobs")
     public Result<Object> getAllJobs() {
-        System.out.println("");
         List<JobInfo> jobList = jobMapper.getAllJob();
         if (jobList.isEmpty()) {
             return Result.failure(null);
@@ -46,8 +46,8 @@ public class JobController {
     }
     @RequestMapping("/deleteJob")
     public Result<Object> deleteJob(@RequestBody Map<String, String> map) {
-        String id = map.get("id");
-        if (masterNode.deleteJob(id)) {
+        String name = map.get("name");
+        if (masterNode.deleteJob(name)) {
             return Result.success(CodeEnum.DELETE_JOB_SUCCESS);
         }
         return Result.failure(CodeEnum.DELETE_JOB_ERR);

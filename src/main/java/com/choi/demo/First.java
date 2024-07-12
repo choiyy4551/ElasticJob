@@ -19,7 +19,7 @@ public class First {
         configuration.setClusterName("cluster");
         configuration.setResources("100");
         configuration.setIp("127.0.0.1");
-        configuration.setPort(8081);
+        configuration.setPort(8080);
         configuration.setMaxParallel(4);
         return configuration;
     }

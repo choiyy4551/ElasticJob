@@ -86,7 +86,11 @@ public class SlaveNode {
                     }
                 }
             }
-            stub = slaveStub.getBlockingStub(host);
+            if (!host.equals(this.host) || host.isEmpty()) {
+                this.host = host;
+                slaveStub.shutDown();
+                stub = slaveStub.getBlockingStub(host);
+            }
             //没有注册且节点未关闭则反复注册
             while (!register()) {
                 synchronized (object) {
@@ -113,9 +117,10 @@ public class SlaveNode {
                 .setResources(resource).setMaxParallel(maxParallel).build();
         RegisterNodeReply registerNodeReply;
         String host = jedisCluster.get("host");
-        if (host.equals(this.host))
+        if (host.equals(this.host) && !host.isEmpty())
             return true;
         this.host = host;
+        slaveStub.shutDown();
         stub = slaveStub.getBlockingStub(host);
         try {
             registerNodeReply = stub.registerNode(registerNodeRequest);
@@ -169,7 +174,11 @@ public class SlaveNode {
         DeregisterNodeRequest deregisterNodeRequest = DeregisterNodeRequest.newBuilder().setNodeId(node.getNodeId()).build();
         DeregisterNodeReply deregisterNodeReply;
         String host = jedisCluster.get("host");
-        stub = slaveStub.getBlockingStub(host);
+        if (!host.equals(this.host) || host.isEmpty()) {
+            this.host = host;
+            slaveStub.shutDown();
+            stub = slaveStub.getBlockingStub(host);
+        }
         try {
             deregisterNodeReply = stub.deregisterNode(deregisterNodeRequest);
         } catch (StatusRuntimeException e) {
@@ -209,7 +218,11 @@ public class SlaveNode {
         JobReply jobReply;
         List<JobInfo> jobInfoList = new ArrayList<>();
         String host = jedisCluster.get("host");
-        stub = slaveStub.getBlockingStub(host);
+        if (!host.equals(this.host) || host.isEmpty()) {
+            this.host = host;
+            slaveStub.shutDown();
+            stub = slaveStub.getBlockingStub(host);
+        }
         try {
             jobReply = stub.getJob(jobRequest);
         } catch (RuntimeException e) {
@@ -259,7 +272,11 @@ public class SlaveNode {
                 .setScheduleType(jobInfo.getScheduleType()).setScheduleParam(jobInfo.getScheduleParam()).build();
         AddJobReply addJobReply;
         String host = jedisCluster.get("host");
-        stub = slaveStub.getBlockingStub(host);
+        if (!host.equals(this.host) || host.isEmpty()) {
+            this.host = host;
+            slaveStub.shutDown();
+            stub = slaveStub.getBlockingStub(host);
+        }
         try {
             addJobReply = stub.addJob(addJobRequest);
         } catch (RuntimeException e) {

@@ -53,7 +53,7 @@ public class SlaveJobHandler implements SlaveService{
     }
     private void deleteJudge(JobInfo jobInfo) {
         switch (jobInfo.getScheduleType()) {
-            case "One" :
+            case "Once" :
             case "Repeat" : {
                 jobMapper.stopJob(jobInfo.getUuid());
             }

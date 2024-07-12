@@ -94,13 +94,15 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         return jobMapper.getAllJob();
     }
     @Override
-    public boolean deleteJob(String uuid) {
-        JobInfo job = jobMapper.getJobById(uuid);
+    public boolean deleteJob(String name) {
+        JobInfo job = jobMapper.getJobByName(name);
         if (job == null) {
-            //log
+            System.out.println("删除任务失败，不存在该任务!");
             return false;
         }
-        return jobResultMapper.deleteJob(uuid);
+        jobMapper.deleteJob(name);
+        jobResultMapper.deleteJob(name);
+        return true;
     }
     private List<JobInfo> divideJob(String resources, String maxParallel) {
         return masterJobHandler.divideJob(resources, maxParallel);
