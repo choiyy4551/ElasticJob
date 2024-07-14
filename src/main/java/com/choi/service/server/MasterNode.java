@@ -49,7 +49,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
             shutDown = false;
             //开启服务并向集群中写入ip:port信息
             server = ServerBuilder.forPort(port).addService(new GrpcMethods()).build().start();
-            jedisCluster.set("host", configuration.getIp() + ":" + configuration.getPort());
+            jedisCluster.set("host", configuration.getIp() + ":" + port);
             masterJobHandler.start();
             //开启线程对任务队列分配
             taskExecutor.submit(masterJobHandler.new changeJob());
