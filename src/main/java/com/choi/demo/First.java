@@ -3,6 +3,7 @@ package com.choi.demo;
 import com.choi.pojo.Configuration;
 import com.choi.pojo.JobInfo;
 import com.choi.service.client.SlaveService;
+import com.choi.utils.StringAndInteger;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -10,7 +11,12 @@ public class First {
     public static class demo01 implements SlaveService {
         @Override
         public boolean runJob(JobInfo jobInfo) {
-            System.out.println("yyyyyyyyyyyyyyyyy");
+            int param = StringAndInteger.StringToInteger(jobInfo.getParam());
+            try {
+                Thread.sleep(param);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             return true;
         }
     }

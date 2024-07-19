@@ -6,45 +6,43 @@ import com.choi.mapper.JobResultMapper;
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.JobResult;
 import com.choi.pojo.Result;
+import com.choi.service.server.MasterNode;
+import com.google.rpc.Code;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/Result")
 public class ResultController {
     @Autowired
-    private JobMapper jobMapper;
-    @Autowired
-    private JobResultMapper jobResultMapper;
+    MasterNode masterNode;
     @RequestMapping("/getAllResult")
     public Result<Object> getAllResult() {
-        List<JobResult> jobResultList = jobResultMapper.getAllJobResult();
+        List<JobResult> jobResultList = masterNode.getAllJobResult();
         if (jobResultList.isEmpty()) {
             return Result.failure(CodeEnum.DELETE_JOB_ERR);
         }
         return Result.success(jobResultList);
     }
-
-    @RequestMapping("/getResultByName")
-    public Result<Object> getResultByName(String name) {
-        JobInfo job = jobMapper.getJobByName(name);
-        if (job == null) {
-            return Result.failure(CodeEnum.DELETE_JOB_ERR);
-        } else {
-            JobResult jobResult = jobResultMapper.getJobResultById(job.getUuid());
-            return Result.success(jobResult);
-        }
+    @RequestMapping("/getJobResult")
+    public Result<Object> getJobResult(@RequestBody Map<String, String> map) {
+        String name = map.get("name");
+        JobResult jobResult = masterNode.getJobResult(name);
+        if (jobResult == null)
+            return Result.failure(CodeEnum.ERR);
+        return Result.success(jobResult);
     }
     @RequestMapping("/getJobStatus")
-    public Result<Object> getJobStatus(String name) {
-        JobInfo job = jobMapper.getJobByName(name);
-        if (job == null) {
-            return Result.failure(CodeEnum.DONT_HAVE_SUCH_JOB);
-        }
-        int jobStatus = jobResultMapper.getJobStatusByName(name);
-        return Result.success(jobStatus);
+    public Result<Object> getJobStatus(@RequestBody Map<String, String> map) {
+        String name = map.get("name");
+        int jobStatus = masterNode.getJobStatus(name);
+        if (jobStatus == -1)
+            return Result.failure(CodeEnum.ERR);
+        return Result.success(CodeEnum.SUCCESS);
     }
 }

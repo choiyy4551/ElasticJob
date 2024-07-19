@@ -12,6 +12,10 @@ public interface JobResultMapper {
     JobResult getJobResultById(String uuid);
     @Delete("delete from jobresult where name = #{name}")
     boolean deleteJob(String name);
+    @Update("update jobresult set deleteStatus = 0 where name = #{name}")
+    boolean startJob(String name);
+    @Update("update jobresult set deleteStatus = 1 where name = #{name}")
+    boolean stopJob(String name);
     /**
      * 任务完成添加执行结果
      * @param jobResult 任务结果信息
@@ -22,6 +26,8 @@ public interface JobResultMapper {
     boolean addResult(JobResult jobResult);
     @Select("select * from jobresult")
     List<JobResult> getAllJobResult();
+    @Select("select * from jobresult where name = #{name}")
+    JobResult getJobResult(String name);
     @Update("update jobresult set jobStatus = #{jobStatus} where uuid = #{uuid}")
     boolean setJobStatus(@Param("jobStatus")int jobStatus, @Param("uuid")String uuid);
     @Select("select jobStatus from jobresult where uuid = #{uuid}")

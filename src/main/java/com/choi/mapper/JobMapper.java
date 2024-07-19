@@ -44,16 +44,18 @@ public interface JobMapper {
     boolean updateJobInfo(JobInfo jobInfo);
     @Select("select * from jobinfo")
     List<JobInfo> getAllJob();
+    @Select("select * from jobinfo where deleteStatus = 0")
+    List<JobInfo> getAllUseful();
     @Select("select * from jobinfo where name = #{name}")
     JobInfo getJobByName(String name);
     @Select("select * from jobinfo where uuid = #{uuid}")
     JobInfo getJobById(String uuid);
     @Update("update jobinfo set lastRunTime = #{lastRunTime} where uuid = #{uuid}")
     boolean setLastRunTime(@Param("lastRunTime")String lastRunTime,@Param("uuid")String uuid);
-    @Update("update jobinfo set deleteStatus = 0 where uuid = #{uuid}")
-    boolean startJob(String uuid);
-    @Update("update jobinfo set deleteStatus = 1 where uuid = #{uuid}")
-    boolean stopJob(String uuid);
+    @Update("update jobinfo set deleteStatus = 0 where name = #{name}")
+    boolean startJob(String name);
+    @Update("update jobinfo set deleteStatus = 1 where name = #{name}")
+    boolean stopJob(String name);
     @Delete("delete from jobinfo where name = #{name}")
     boolean deleteJob(String name);
 

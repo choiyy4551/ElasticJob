@@ -32,16 +32,16 @@ public class MasterJobHandler {
 
     public void start() {
         shutDown = false;
-        setJobTime();
+        initJob();
     }
 
     public void stop() {
         //设置shutdown回收线程
         shutDown = true;
     }
-    public void setJobTime() {
+    public void initJob() {
         //只有启动时从数据库中重新读取一遍任务
-        List<JobInfo> jobInfoList = jobMapper.getAllJob();
+        List<JobInfo> jobInfoList = jobMapper.getAllUseful();
         if (jobInfoList.isEmpty()) {
             System.out.println("数据库中没有剩余任务");
             return;
@@ -237,11 +237,11 @@ public class MasterJobHandler {
         return jobTimeInfo;
     }
     public void addRunningJobSize(int maxParallel) {
-        System.out.println("runningJobSize增加");
+        System.out.println("子节点增加");
         runningJobSize += maxParallel;
     }
     public void minusRunningJobSize(int maxParallel) {
-        System.out.println("runningJobSize减少");
+        System.out.println("子节点减少");
         runningJobSize -= maxParallel;
     }
     class changeJob implements Runnable {

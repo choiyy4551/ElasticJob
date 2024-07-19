@@ -1,11 +1,10 @@
 package com.choi.controller;
 
 import com.choi.Enums.CodeEnum;
-import com.choi.mapper.JobMapper;
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.Result;
-import com.choi.service.Node;
 import com.choi.service.server.MasterNode;
+import com.choi.Exception.MyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +17,6 @@ import java.util.Map;
 @RequestMapping("/Job")
 public class JobController {
     @Autowired
-    private Node node;
-    @Autowired
-    private JobMapper jobMapper;
-    @Autowired
     private MasterNode masterNode;
     @RequestMapping("/addJob")
     public Result<Object> addJob(@RequestBody Map<String, String> map) {
@@ -30,15 +25,14 @@ public class JobController {
         jobInfo.setParam(map.get("param"));
         jobInfo.setScheduleType(map.get("scheduleType"));
         jobInfo.setScheduleParam(map.get("scheduleParam"));
-        System.out.println(jobInfo);
-        if (node.addJob(jobInfo)) {
+        if (masterNode.addJob(jobInfo)) {
             return Result.success(CodeEnum.ADD_JOB_SUCCESS);
         }
         return Result.failure(CodeEnum.ADD_JOB_ERR);
     }
     @RequestMapping("/getAllJobs")
     public Result<Object> getAllJobs() {
-        List<JobInfo> jobList = jobMapper.getAllJob();
+        List<JobInfo> jobList = masterNode.getAllJob();
         if (jobList.isEmpty()) {
             return Result.failure(null);
         }
@@ -52,5 +46,28 @@ public class JobController {
         }
         return Result.failure(CodeEnum.DELETE_JOB_ERR);
     }
-
+    @RequestMapping("/startJob")
+    public Result<Object> startJob(@RequestBody Map<String, String> map) {
+        String name = map.get("name");
+        try {
+            if (masterNode.startJob(name)) {
+                return Result.success(CodeEnum.SUCCESS);
+            }
+        } catch (MyException e) {
+            e.printStackTrace();
+        }
+        return Result.failure(CodeEnum.ERR);
+    }
+    @RequestMapping("/stopJob")
+    public Result<Object> stopJob(@RequestBody Map<String, String> map) {
+        String name = map.get("name");
+        try {
+            if (masterNode.stopJob(name)) {
+                return Result.success(CodeEnum.SUCCESS);
+            }
+        } catch (MyException e) {
+            e.printStackTrace();
+        }
+        return Result.failure(CodeEnum.ERR);
+    }
 }

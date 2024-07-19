@@ -6,6 +6,7 @@ import com.choi.mapper.JobMapper;
 import com.choi.mapper.JobResultMapper;
 import com.choi.pojo.*;
 import com.choi.pojo.JobInfo;
+import com.choi.Exception.MyException;
 import com.choi.utils.MyUUID;
 import com.choi.utils.ScheduleTime;
 import com.choi.utils.StringAndInteger;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisCluster;
 
 import java.io.IOException;
@@ -25,7 +27,7 @@ import java.util.List;
 
 @Service
 @Data
-public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase implements MasterService, Runnable{
+public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase implements MasterService {
     private Server server;
     private Configuration configuration;
     private boolean shutDown = true;
@@ -79,23 +81,38 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         masterJobHandler.addJob(jobInfo);
         return true;
     }
+
+    /**
+     * 自定义异常用于主动抛出，引起spring事务rollback，保证同一任务在jobinfo和jobresult表中的一致性
+     * @param name
+     * @return
+     * @throws MyException
+     */
+    @Transactional (rollbackFor = Exception.class)
     @Override
-    public JobResult getJobResult(String uuid) {
-        JobInfo job = jobMapper.getJobById(uuid);
-        if (job.getDeleteStatus() == 1) {
-            //log 任务已经删除
-            return new JobResult();
-        }
-        return jobResultMapper.getJobResultById(uuid);
+    public boolean stopJob(String name) throws MyException{
+        JobInfo jobInfo = jobMapper.getJobByName(name);
+        if (jobInfo == null)
+            return false;
+        if (jobMapper.stopJob(name) && jobResultMapper.stopJob(name))
+            return true;
+        throw new MyException("stopJob Error");
     }
+    @Transactional (rollbackFor = Exception.class)
     @Override
-    public List<JobResult> getAllJobResult() {
-        return jobResultMapper.getAllJobResult();
+    public boolean startJob(String name) throws MyException {
+        JobInfo jobInfo = jobMapper.getJobByName(name);
+        if (jobInfo == null)
+            return false;
+        if (jobMapper.startJob(name) && jobResultMapper.startJob(name))
+            return true;
+        throw new MyException("startJob Error");
     }
     @Override
     public List<JobInfo> getAllJob() {
         return jobMapper.getAllJob();
     }
+    @Transactional (rollbackFor = Exception.class)
     @Override
     public boolean deleteJob(String name) {
         JobInfo job = jobMapper.getJobByName(name);
@@ -107,17 +124,29 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         jobResultMapper.deleteJob(name);
         return true;
     }
+    @Override
+    public List<JobResult> getAllJobResult() {
+        return jobResultMapper.getAllJobResult();
+    }
+    @Override
+    public JobResult getJobResult(String name) {
+        JobResult jobResult = jobResultMapper.getJobResult(name);
+        if (jobResult.getDeleteStatus() == 1) {
+            return null;
+        }
+        return jobResult;
+    }
+    @Override
+    public int getJobStatus(String name) {
+        JobResult jobResult = jobResultMapper.getJobResult(name);
+        if (jobResult.getDeleteStatus() == 1) {
+            return -1;
+        }
+        return jobResult.getJobStatus();
+    }
     private List<JobInfo> divideJob(String resources, String maxParallel) {
         return masterJobHandler.divideJob(resources, maxParallel);
     }
-
-    @Override
-    public void run() {
-        while (!shutDown) {
-
-        }
-    }
-
     private class GrpcMethods extends ElasticJobServiceGrpc.ElasticJobServiceImplBase {
         @Override
         public void registerNode(RegisterNodeRequest request, StreamObserver<RegisterNodeReply> responseObserver) {
@@ -293,9 +322,5 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
             responseObserver.onNext(addJobReply);
             responseObserver.onCompleted();
         }
-    }
-
-    private boolean registerJudge(String nodeId) {
-        return !nodes.containsKey(nodeId);
     }
 }

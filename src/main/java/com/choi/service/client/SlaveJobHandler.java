@@ -54,7 +54,8 @@ public class SlaveJobHandler implements SlaveService{
         switch (jobInfo.getScheduleType()) {
             case "Once" :
             case "Repeat" : {
-                jobMapper.stopJob(jobInfo.getUuid());
+                jobMapper.stopJob(jobInfo.getName());
+                jobResultMapper.stopJob(jobInfo.getName());
             }
             break;
             case "Daily" : {
@@ -62,7 +63,7 @@ public class SlaveJobHandler implements SlaveService{
             }
             break;
             default:
-                //log
+                System.out.println("scheduleParam Error");
         }
     }
 
@@ -91,7 +92,6 @@ public class SlaveJobHandler implements SlaveService{
                     jobResult.setResult("success");
                     jobInfo.setLastRunTime(scheduleTime.Now().toString());
                     jobMapper.setLastRunTime(DateUtil.CSTToDate(jobInfo.getLastRunTime()), jobInfo.getUuid());
-                    //log
                     jobResultMapper.updateJobResult(jobResult);
                     //run完之后判断任务的类型，看看是否要被删除
                     deleteJudge(jobInfo);
