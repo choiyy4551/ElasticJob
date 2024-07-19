@@ -37,12 +37,12 @@ public interface JobMapper {
             "values (#{uuid}, #{name}, #{param}, #{scheduleParam}, #{deleteStatus})")
     boolean addTimeJob(JobInfo jobInfo);
 
-    @Insert("insert into jobinfo(uuid, name, param,scheduleType, scheduleParam)" +
-            "values (#{uuid}, #{name}, #{param}, #{scheduleType}, #{scheduleParam})")
+    @Insert("insert into jobinfo(uuid, name, param,scheduleType, scheduleParam, runTime)" +
+            "values (#{uuid}, #{name}, #{param}, #{scheduleType}, #{scheduleParam}, #{runTime})")
     boolean addJobInfo(JobInfo jobInfo);
-    @Update("update jobinfo set name = #{name}, param = #{param}, scheduleType = #{scheduleType}., scheduleParam = #{scheduleParam}, where uuid = #{uuid}")
+    @Update("update jobinfo set name = #{name}, param = #{param}, scheduleType = #{scheduleType}, scheduleParam = #{scheduleParam} where uuid = #{uuid}")
     boolean updateJobInfo(JobInfo jobInfo);
-    @Select("select * from jobinfo where deleteStatus = 0")
+    @Select("select * from jobinfo")
     List<JobInfo> getAllJob();
     @Select("select * from jobinfo where name = #{name}")
     JobInfo getJobByName(String name);

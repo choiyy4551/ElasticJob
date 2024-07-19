@@ -7,6 +7,7 @@ import com.choi.mapper.JobResultMapper;
 import com.choi.pojo.*;
 import com.choi.pojo.JobInfo;
 import com.choi.utils.MyUUID;
+import com.choi.utils.ScheduleTime;
 import com.choi.utils.StringAndInteger;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -41,6 +42,8 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
     private JobMapper jobMapper;
     @Autowired
     private JobResultMapper jobResultMapper;
+    @Autowired
+    private ScheduleTime scheduleTime;
     private final int port = 4551;
     private final HashMap<String, NodeInfo> nodes = new HashMap<>();
     public void start() {

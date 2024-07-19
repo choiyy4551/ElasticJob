@@ -51,8 +51,10 @@ public class MasterJobHandler {
             jobResultMap.put(jobResult.getUuid(), jobResult);
         }
         for (JobInfo jobinfo : jobInfoList) {
+            if (jobTimes.containsKey(jobinfo.getUuid()))
+                continue;
             JobTimeInfo jobTimeInfo = createJobTimeInfo(jobinfo);
-            jobTimes.put(jobTimeInfo.getJobInfo().getUuid(), jobTimeInfo);
+            jobTimes.put(jobinfo.getUuid(), jobTimeInfo);
             if (jobinfo.getScheduleType().equals("Daily")) {
                 Date lastRunTime = DateUtil.DateToCST(jobinfo.getLastRunTime());
                 if (lastRunTime != null) {
@@ -172,27 +174,26 @@ public class MasterJobHandler {
         JobInfo job = jobMapper.getJobByName(name);
         //数据库中存在任务，则更新
         if (job != null) {
+            System.out.println("任务已存在！");
             jobInfo.setUuid(job.getUuid());
             jobInfo.setLastRunTime(job.getLastRunTime());
-            boolean res = jobMapper.updateJobInfo(jobInfo);
-            if (!res) {
-                System.out.println("此任务已存在！");;
-            }
+            jobMapper.updateJobInfo(jobInfo);
             //所有队列中都不存在该任务则加入
             if (!jobTimes.containsKey(jobInfo.getUuid())) {
                 JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
                 jobTimes.put(jobInfo.getUuid(), jobTimeInfo);
                 moveToWaiting(jobTimeInfo);
-                System.out.println("任务添加成功！");
             }
         } else {
             String jobId = myUUID.createUUID();
             jobInfo.setUuid(jobId);
+            JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
+            jobInfo.setRunTime(DateUtil.CSTToDate(jobTimeInfo.getRunTime().toString()));
+            System.out.println(jobInfo.getRunTime());
             boolean res = jobMapper.addJobInfo(jobInfo);
             if (!res) {
                 System.out.println("任务添加失败，数据库异常！");
             }
-            JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
             jobTimes.put(jobInfo.getUuid(), jobTimeInfo);
             JobResult jobResult = new JobResult();
             jobResult.setUuid(jobInfo.getUuid());
@@ -229,7 +230,10 @@ public class MasterJobHandler {
     private JobTimeInfo createJobTimeInfo(JobInfo jobInfo) {
         JobTimeInfo jobTimeInfo = new JobTimeInfo();
         jobTimeInfo.setJobInfo(jobInfo);
-        jobTimeInfo.setRunTime(scheduleTime.GetNextScheduleTime(jobInfo));
+        if (jobInfo.getRunTime() == null || jobInfo.getRunTime().isEmpty())
+            jobTimeInfo.setRunTime(scheduleTime.GetNextScheduleTime(jobInfo));
+        else
+            jobTimeInfo.setRunTime(DateUtil.DateToCST(jobInfo.getRunTime()));
         return jobTimeInfo;
     }
     public void addRunningJobSize(int maxParallel) {

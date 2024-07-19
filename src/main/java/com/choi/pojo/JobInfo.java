@@ -16,5 +16,6 @@ public class JobInfo {
     private String scheduleType; //任务调度类型
     private String scheduleParam; //调度参数,分钟数
     private String lastRunTime; //最后一次执行时间
+    private String runTime; //执行时间持久化
     private int deleteStatus; //0代表任务启用中，1表示任务已删除
 }

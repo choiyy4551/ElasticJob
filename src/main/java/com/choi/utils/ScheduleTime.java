@@ -12,7 +12,7 @@ import java.util.Date;
 public class ScheduleTime {
     public Date Now() {
         Calendar nowTime = Calendar.getInstance();
-        return nowTime.getTime();//获取当前时间
+        return nowTime.getTime();
     }
 
     public Date GetNextScheduleTime(JobInfo jobInfo)  {
@@ -21,10 +21,10 @@ public class ScheduleTime {
         }
 
         switch (jobInfo.getScheduleType()) {
-            case "Once": {//立即执行
+            case "Once": {
                 if (jobInfo.getScheduleParam() == null || jobInfo.getScheduleParam().isEmpty()) {
-                    return Now();//默认现在执行
-                } else {//xx分后执行
+                    return Now();
+                } else {
                     String min = jobInfo.getScheduleParam();
                     Calendar nowTime = Calendar.getInstance();
                     nowTime.add(Calendar.MINUTE, Integer.parseInt(min));
@@ -34,7 +34,7 @@ public class ScheduleTime {
             case "Repeat": {
                 if (jobInfo.getScheduleParam() == null || jobInfo.getScheduleParam().isEmpty()) {
                     return null;//
-                } else {//每隔xx分后执行
+                } else {
                     String min = jobInfo.getScheduleParam();
                     Calendar last = Calendar.getInstance();
                     if (jobInfo.getLastRunTime() == null) {
@@ -46,26 +46,24 @@ public class ScheduleTime {
                     return last.getTime();
                 }
             }
-            case "Daily": {//每天的xx点xx分执行，转化为xx分钟
+            case "Daily": {
                 if (jobInfo.getScheduleParam() == null || jobInfo.getScheduleParam().isEmpty()) {
                     return null;
                 } else {
-                    Calendar last = Calendar.getInstance();
-                    if(jobInfo.getLastRunTime()==null){
-                        String string = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
-                        int hour = Integer.parseInt(jobInfo.getScheduleParam().substring(0,2));
-                        int min = Integer.parseInt(jobInfo.getScheduleParam().substring(3,5));
-                        int sec = Integer.parseInt(jobInfo.getScheduleParam().substring(6,8));
-                        int year = Integer.parseInt(string.substring(0,4));
-                        int month = Integer.parseInt(string.substring(5,7));
-                        int day = Integer.parseInt(string.substring(8,10));
-                        last.set(year,month,day,hour,min,sec);
+                    String day;
+                    if(jobInfo.getLastRunTime() == null){
+                        day = new SimpleDateFormat("yyyy-MM-dd").format(new Date()).toString();
+                        day += " " + jobInfo.getScheduleParam();
                     }
-                    else{
-                        last.setTime(new Date(jobInfo.getLastRunTime()));
+                    else {
+                        day = jobInfo.getLastRunTime();
                     }
-                    last.add(Calendar.DATE, 1);
-                    return last.getTime();
+                    Date date = DateUtil.DateToCST(day);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    if (date.before(Now()))
+                        calendar.add(Calendar.DATE, 1);
+                    return calendar.getTime();
                 }
             }
             default:
