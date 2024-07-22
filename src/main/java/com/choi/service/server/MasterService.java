@@ -15,4 +15,5 @@ public interface MasterService {
     JobResult getJobResult(String name);
     List<JobResult> getAllJobResult();
     int getJobStatus(String name);
+    JobResult getJobResultByName(String name);
 }

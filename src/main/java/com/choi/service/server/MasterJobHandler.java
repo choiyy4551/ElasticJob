@@ -9,6 +9,8 @@ import com.choi.utils.MyUUID;
 import com.choi.utils.ScheduleTime;
 import com.choi.utils.StringAndInteger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import java.util.*;
 
@@ -18,6 +20,9 @@ public class MasterJobHandler {
     private JobMapper jobMapper;
     @Autowired
     private JobResultMapper jobResultMapper;
+    @Qualifier("taskExecutor")
+    @Autowired
+    private ThreadPoolTaskExecutor taskExecutor;
     @Autowired
     private ScheduleTime scheduleTime;
     @Autowired
@@ -32,6 +37,8 @@ public class MasterJobHandler {
 
     public void start() {
         shutDown = false;
+        //开启线程对任务队列分配
+        taskExecutor.submit(this.new changeJob());
         initJob();
     }
 

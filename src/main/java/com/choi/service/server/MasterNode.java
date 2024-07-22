@@ -31,9 +31,6 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
     private Server server;
     private Configuration configuration;
     private boolean shutDown = true;
-    @Qualifier("taskExecutor")
-    @Autowired
-    private ThreadPoolTaskExecutor taskExecutor;
     @Autowired
     private JedisCluster jedisCluster;
     @Autowired
@@ -56,8 +53,6 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
             server = ServerBuilder.forPort(port).addService(new GrpcMethods()).build().start();
             jedisCluster.set("host", configuration.getIp() + ":" + port);
             masterJobHandler.start();
-            //开启线程对任务队列分配
-            taskExecutor.submit(masterJobHandler.new changeJob());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -144,6 +139,16 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         }
         return jobResult.getJobStatus();
     }
+
+    @Override
+    public JobResult getJobResultByName(String name) {
+        JobResult jobResult = jobResultMapper.getJobResult(name);
+        if (jobResult.getDeleteStatus() == 1) {
+            return null;
+        }
+        return jobResult;
+    }
+
     private List<JobInfo> divideJob(String resources, String maxParallel) {
         return masterJobHandler.divideJob(resources, maxParallel);
     }

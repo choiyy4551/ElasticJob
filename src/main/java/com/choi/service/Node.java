@@ -60,6 +60,7 @@ public class Node {
         slaveNode.stop();
     }
     //只有主节点才能添加任务，从节点只能将任务信息转发给主节点
+    //主节点服务注册，可以避开从节点添加任务的问题
     public boolean addJob(JobInfo jobInfo) {
         if (hasLock) {
             System.out.println("主节点添加任务");

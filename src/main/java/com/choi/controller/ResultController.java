@@ -1,13 +1,9 @@
 package com.choi.controller;
 
 import com.choi.Enums.CodeEnum;
-import com.choi.mapper.JobMapper;
-import com.choi.mapper.JobResultMapper;
-import com.choi.pojo.JobInfo;
 import com.choi.pojo.JobResult;
 import com.choi.pojo.Result;
 import com.choi.service.server.MasterNode;
-import com.google.rpc.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,5 +40,13 @@ public class ResultController {
         if (jobStatus == -1)
             return Result.failure(CodeEnum.ERR);
         return Result.success(CodeEnum.SUCCESS);
+    }
+    @RequestMapping("/getJobResultByName")
+    public Result<Object> getJobResultByName(@RequestBody Map<String, String> map) {
+        String name = map.get("name");
+        JobResult jobResult = masterNode.getJobResultByName(name);
+        if (jobResult == null)
+            return Result.failure(CodeEnum.ERR);
+        return Result.success(jobResult);
     }
 }
