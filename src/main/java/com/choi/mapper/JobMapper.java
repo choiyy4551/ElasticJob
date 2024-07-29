@@ -1,14 +1,15 @@
 package com.choi.mapper;
 
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.choi.pojo.*;
-import lombok.Data;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
+@DS("db1")
 public interface JobMapper {
     /**
      * 添加立刻执行的任务

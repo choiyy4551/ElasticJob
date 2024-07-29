@@ -1,8 +1,7 @@
 package com.choi.service.server;
 
 import com.choi.Enums.JobStatusEnum;
-import com.choi.mapper.JobMapper;
-import com.choi.mapper.JobResultMapper;
+import com.choi.mapper.*;
 import com.choi.pojo.*;
 import com.choi.utils.DateUtil;
 import com.choi.utils.MyUUID;
