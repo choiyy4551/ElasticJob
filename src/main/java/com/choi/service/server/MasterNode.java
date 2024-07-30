@@ -2,26 +2,29 @@ package com.choi.service.server;
 
 import com.choi.grpc.*;
 import com.choi.grpc.GrpcJobInfo;
-import com.choi.mapper.JobMapper;
-import com.choi.mapper.JobResultMapper;
+import com.choi.mapper.DB1Mapper;
+import com.choi.mapper.DB2Mapper;
+import com.choi.mapper.DB3Mapper;
 import com.choi.pojo.*;
 import com.choi.pojo.JobInfo;
 import com.choi.Exception.MyException;
+import com.choi.service.common.BaseOperations;
+import com.choi.service.common.Operations;
+import com.choi.utils.DBChooseUtil;
 import com.choi.utils.MyUUID;
 import com.choi.utils.ScheduleTime;
-import com.choi.utils.StringAndInteger;
+import com.choi.utils.StringIntegerUtil;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.JedisCluster;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,13 +41,18 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
     @Autowired
     private MyUUID myUUID;
     @Autowired
-    private JobMapper jobMapper;
+    private DB1Mapper db1Mapper;
     @Autowired
-    private JobResultMapper jobResultMapper;
+    private DB2Mapper db2Mapper;
+    @Autowired
+    private DB3Mapper db3Mapper;
+    @Autowired
+    private DBChooseUtil dbChooseUtil;
     @Autowired
     private ScheduleTime scheduleTime;
     private final int port = 4551;
     private final HashMap<String, NodeInfo> nodes = new HashMap<>();
+
     public void start() {
         try {
             System.out.println("我是领导!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -57,6 +65,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
             throw new RuntimeException(e);
         }
     }
+
     public void stop() {
         if (server != null) {
             server.shutdown();
@@ -65,93 +74,118 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         shutDown = true;
         System.out.println("主节点关闭");
     }
+
     @Override
     public boolean addJob(JobInfo jobInfo) {
-        JobInfo job = jobMapper.getJobByName(jobInfo.getName());
-        if (job != null) {
-            //log
-            return false;
+        String name = jobInfo.getName();
+        //任务不存在，需要设置id
+        if (sequenceExists(name)) {
+            int id = db1Mapper.getId(name);
+            String uuid = StringIntegerUtil.IntegerToString(id);
+            jobInfo.setUuid(uuid);
+            return masterJobHandler.updateJobInfo(jobInfo);
         }
-        jobInfo.setUuid(myUUID.createUUID());
-        masterJobHandler.addJob(jobInfo);
-        return true;
+        try {
+            db1Mapper.callInsertSequence(name);
+            String uuid = StringIntegerUtil.IntegerToString(db1Mapper.getId(name));
+            jobInfo.setUuid(uuid);
+            return masterJobHandler.addJob(jobInfo);
+        } catch (MyException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
-    /**
-     * 自定义异常用于主动抛出，引起spring事务rollback，保证同一任务在jobinfo和jobresult表中的一致性
-     * @param name
-     * @return
-     * @throws MyException
-     */
-    @Transactional (rollbackFor = Exception.class)
-    @Override
-    public boolean stopJob(String name) throws MyException{
-        JobInfo jobInfo = jobMapper.getJobByName(name);
-        if (jobInfo == null)
-            return false;
-        if (jobMapper.stopJob(name) && jobResultMapper.stopJob(name))
-            return true;
-        throw new MyException("stopJob Error");
-    }
-    @Transactional (rollbackFor = Exception.class)
     @Override
     public boolean startJob(String name) throws MyException {
-        JobInfo jobInfo = jobMapper.getJobByName(name);
-        if (jobInfo == null)
+        int id = getJobId(name);
+        if (id == -1)
             return false;
-        if (jobMapper.startJob(name) && jobResultMapper.startJob(name))
-            return true;
-        throw new MyException("startJob Error");
+        BaseOperations baseOperations = dbChooseUtil.getDB(id);
+        return baseOperations.startJob(name);
     }
+
     @Override
-    public List<JobInfo> getAllJob() {
-        return jobMapper.getAllJob();
+    public boolean stopJob(String name) throws MyException {
+        int id = getJobId(name);
+        if (id == -1)
+            return false;
+        BaseOperations baseOperations = dbChooseUtil.getDB(id);
+        return baseOperations.stopJob(name);
     }
-    @Transactional (rollbackFor = Exception.class)
+
     @Override
-    public boolean deleteJob(String name) {
-        JobInfo job = jobMapper.getJobByName(name);
-        if (job == null) {
+    public boolean deleteJob(String name) throws MyException{
+        int id = getJobId(name);
+        if (id == -1) {
             System.out.println("删除任务失败，不存在该任务!");
             return false;
         }
-        jobMapper.deleteJob(name);
-        jobResultMapper.deleteJob(name);
-        return true;
-    }
-    @Override
-    public List<JobResult> getAllJobResult() {
-        return jobResultMapper.getAllJobResult();
-    }
-    @Override
-    public JobResult getJobResult(String name) {
-        JobResult jobResult = jobResultMapper.getJobResult(name);
-        if (jobResult.getDeleteStatus() == 1) {
-            return null;
-        }
-        return jobResult;
-    }
-    @Override
-    public int getJobStatus(String name) {
-        JobResult jobResult = jobResultMapper.getJobResult(name);
-        if (jobResult.getDeleteStatus() == 1) {
-            return -1;
-        }
-        return jobResult.getJobStatus();
+        BaseOperations baseOperations = dbChooseUtil.getDB(id);
+        return baseOperations.deleteJob(name);
     }
 
     @Override
-    public JobResult getJobResultByName(String name) {
-        JobResult jobResult = jobResultMapper.getJobResult(name);
-        if (jobResult.getDeleteStatus() == 1) {
+    public List<JobInfo> getAllJob() {
+        List<JobInfo> db1Jobs = db1Mapper.getAllJob();
+        List<JobInfo> db2Jobs = db2Mapper.getAllJob();
+        List<JobInfo> db3Jobs = db3Mapper.getAllJob();
+        List<JobInfo> jobs = new ArrayList<>();
+        jobs.addAll(db1Jobs);
+        jobs.addAll(db2Jobs);
+        jobs.addAll(db3Jobs);
+        jobs.sort((a, b) -> StringIntegerUtil.StringToInteger(a.getUuid())
+                - StringIntegerUtil.StringToInteger(b.getUuid()));
+        return jobs;
+    }
+
+    @Override
+    public List<JobResult> getAllJobResult() {
+        List<JobResult> db1Results = db1Mapper.getAllResult();
+        List<JobResult> db2Results = db2Mapper.getAllResult();
+        List<JobResult> db3Results = db3Mapper.getAllResult();
+        List<JobResult> results = new ArrayList<>();
+        results.addAll(db1Results);
+        results.addAll(db2Results);
+        results.addAll(db3Results);
+        results.sort((a, b) -> StringIntegerUtil.StringToInteger(a.getUuid())
+                - StringIntegerUtil.StringToInteger(b.getUuid()));
+        return results;
+    }
+
+    @Override
+    public JobResult getJobResult(String name) {
+        int id = getJobId(name);
+        if (id == -1)
             return null;
-        }
-        return jobResult;
+        String uuid = StringIntegerUtil.IntegerToString(id);
+        BaseOperations baseOperations = dbChooseUtil.getDB(id);
+        return baseOperations.getJobResult(uuid);
+    }
+
+    @Override
+    public int getJobStatus(String name) {
+        int id = getJobId(name);
+        String uuid = StringIntegerUtil.IntegerToString(id);
+        return masterJobHandler.getJobStatus(uuid);
     }
 
     private List<JobInfo> divideJob(String resources, String maxParallel) {
         return masterJobHandler.divideJob(resources, maxParallel);
     }
+
+    private boolean sequenceExists(String name) {
+        Sequence sequence = db1Mapper.getSequence(name);
+        return sequence != null;
+    }
+
+    private int getJobId(String name) {
+        Sequence sequence = db1Mapper.getSequence(name);
+        if (sequence == null)
+            return -1;
+        return sequence.getId();
+    }
+
     private class GrpcMethods extends ElasticJobServiceGrpc.ElasticJobServiceImplBase {
         @Override
         public void registerNode(RegisterNodeRequest request, StreamObserver<RegisterNodeReply> responseObserver) {
@@ -192,7 +226,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
             if (!nodes.containsKey(nodeId)) {
                 NodeInfo nodeInfo = new NodeInfo(nodeId, resources, Integer.parseInt(maxParallel));
                 nodes.put(nodeId, nodeInfo);
-                masterJobHandler.addRunningJobSize(StringAndInteger.StringToInteger(maxParallel));
+                masterJobHandler.addRunningJobSize(StringIntegerUtil.StringToInteger(maxParallel));
                 errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("register successfully").build();
                 registerNodeReply = RegisterNodeReply.newBuilder().setErr(errorCode).build();
                 responseObserver.onNext(registerNodeReply);
@@ -299,6 +333,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
                 responseObserver.onCompleted();
             }
         }
+
         @Override
         public void addJob(AddJobRequest request, StreamObserver<AddJobReply> responseObserver) {
             ErrorCode errorCode;

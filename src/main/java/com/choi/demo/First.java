@@ -3,7 +3,7 @@ package com.choi.demo;
 import com.choi.pojo.Configuration;
 import com.choi.pojo.JobInfo;
 import com.choi.service.client.SlaveService;
-import com.choi.utils.StringAndInteger;
+import com.choi.utils.StringIntegerUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,7 +11,7 @@ public class First {
     public static class demo01 implements SlaveService {
         @Override
         public boolean runJob(JobInfo jobInfo) {
-            int param = StringAndInteger.StringToInteger(jobInfo.getParam());
+            int param = StringIntegerUtil.StringToInteger(jobInfo.getParam());
             try {
                 Thread.sleep(param);
             } catch (InterruptedException e) {

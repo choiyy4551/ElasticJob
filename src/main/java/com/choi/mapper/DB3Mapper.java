@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @DS("db3")
 @Repository
-public interface DB3Mapper {
-
+public interface DB3Mapper extends BaseMapper{
 }

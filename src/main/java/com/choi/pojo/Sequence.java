@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AtOnceJob {
-    private String uuid;
+public class Sequence {
+    private int id;
     private String name;
-    private String param;
-    private int deleteStatus;
 }

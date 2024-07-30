@@ -1,12 +1,17 @@
 package com.choi.service.client;
 
 import com.choi.Enums.JobStatusEnum;
-import com.choi.mapper.JobMapper;
-import com.choi.mapper.JobResultMapper;
+import com.choi.Exception.MyException;
+import com.choi.mapper.DB1Mapper;
+import com.choi.mapper.DB2Mapper;
+import com.choi.mapper.DB3Mapper;
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.JobResult;
+import com.choi.service.common.BaseOperations;
+import com.choi.utils.DBChooseUtil;
 import com.choi.utils.DateUtil;
 import com.choi.utils.ScheduleTime;
+import com.choi.utils.StringIntegerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -17,9 +22,13 @@ import java.util.concurrent.BlockingQueue;
 @Component
 public class SlaveJobHandler implements SlaveService{
     @Autowired
-    private JobMapper jobMapper;
+    private DB1Mapper db1Mapper;
     @Autowired
-    private JobResultMapper jobResultMapper;
+    private DB2Mapper db2Mapper;
+    @Autowired
+    private DB3Mapper db3Mapper;
+    @Autowired
+    private DBChooseUtil dbChooseUtil;
     @Qualifier("taskExecutor")
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
@@ -42,26 +51,45 @@ public class SlaveJobHandler implements SlaveService{
         System.out.println("任务执行");
         return true;
     }
+
     private void setStartTime(JobResult jobResult) {
         jobResult.setStartTime(DateUtil.CSTToDate(scheduleTime.Now().toString()));
         jobResult.setJobStatus(JobStatusEnum.Doing.getValue());
-        jobResultMapper.setJobStatus(JobStatusEnum.Doing.getValue(), jobResult.getUuid());
+        String uuid = jobResult.getUuid();
+        int id = StringIntegerUtil.StringToInteger(uuid);
+        switch (id % 3) {
+            case 0:
+                db1Mapper.setStatus(JobStatusEnum.Doing.getValue(), jobResult.getUuid());
+                break;
+            case 1:
+                db2Mapper.setStatus(JobStatusEnum.Doing.getValue(), jobResult.getUuid());
+                break;
+            case 2:
+                db3Mapper.setStatus(JobStatusEnum.Doing.getValue(), jobResult.getUuid());
+                break;
+        }
     }
+
     private void setFinishTime(JobResult jobResult) {
         jobResult.setFinishTime(DateUtil.CSTToDate(scheduleTime.Now().toString()));
     }
+
     private void deleteJudge(JobInfo jobInfo) {
         switch (jobInfo.getScheduleType()) {
             case "Once" :
-            case "Repeat" : {
-                jobMapper.stopJob(jobInfo.getName());
-                jobResultMapper.stopJob(jobInfo.getName());
-            }
-            break;
-            case "Daily" : {
+            case "Repeat" :
+                try {
+                    String uuid = jobInfo.getUuid();
+                    int id = StringIntegerUtil.StringToInteger(uuid);
+                    BaseOperations baseOperations = dbChooseUtil.getDB(id);
+                    baseOperations.stopJob(jobInfo.getName());
+                } catch (MyException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "Daily" :
                 //每日任务则继续启用
-            }
-            break;
+                break;
             default:
                 System.out.println("scheduleParam Error");
         }
@@ -80,7 +108,10 @@ public class SlaveJobHandler implements SlaveService{
                     Thread.sleep(1000);
                     //消费者模型，take()会自动唤醒生产者
                     JobInfo jobInfo = queue.take();
-                    JobResult jobResult = jobResultMapper.getJobResultById(jobInfo.getUuid());
+                    String uuid = jobInfo.getUuid();
+                    int id = StringIntegerUtil.StringToInteger(uuid);
+                    BaseOperations baseOperations = dbChooseUtil.getDB(id);
+                    JobResult jobResult = baseOperations.getJobResult(jobInfo.getUuid());
                     setStartTime(jobResult);
                     //log
                     jobResult.setNodeId(nodeId);
@@ -91,8 +122,21 @@ public class SlaveJobHandler implements SlaveService{
                     setFinishTime(jobResult);
                     jobResult.setResult("success");
                     jobInfo.setLastRunTime(scheduleTime.Now().toString());
-                    jobMapper.setLastRunTime(DateUtil.CSTToDate(jobInfo.getLastRunTime()), jobInfo.getUuid());
-                    jobResultMapper.updateJobResult(jobResult);
+                    String date = DateUtil.CSTToDate(jobInfo.getLastRunTime());
+                    switch (id % 3) {
+                        case 0:
+                            db1Mapper.setLastRunTime(date, uuid);
+                            db1Mapper.updateResult(jobResult);
+                            break;
+                        case 1:
+                            db2Mapper.setLastRunTime(date, uuid);
+                            db2Mapper.updateResult(jobResult);
+                            break;
+                        case 2:
+                            db3Mapper.setLastRunTime(date, uuid);
+                            db3Mapper.updateResult(jobResult);
+                            break;
+                    }
                     //run完之后判断任务的类型，看看是否要被删除
                     deleteJudge(jobInfo);
                 } catch (InterruptedException e) {

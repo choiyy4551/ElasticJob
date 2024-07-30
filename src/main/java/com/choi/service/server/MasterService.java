@@ -10,10 +10,9 @@ public interface MasterService {
     boolean addJob(JobInfo jobInfo);
     boolean stopJob(String name) throws MyException;
     boolean startJob(String name) throws MyException;
-    boolean deleteJob(String name);
+    boolean deleteJob(String name) throws MyException;
     List<JobInfo> getAllJob();
     JobResult getJobResult(String name);
     List<JobResult> getAllJobResult();
     int getJobStatus(String name);
-    JobResult getJobResultByName(String name);
 }

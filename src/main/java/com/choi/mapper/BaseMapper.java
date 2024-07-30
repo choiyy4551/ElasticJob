@@ -3,9 +3,11 @@ package com.choi.mapper;
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.JobResult;
 import org.apache.ibatis.annotations.*;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface BaseMapper {
     @Insert("insert into jobinfo(uuid, name, param,scheduleType, scheduleParam, runTime)" +
             "values (#{uuid}, #{name}, #{param}, #{scheduleType}, #{scheduleParam}, #{runTime})")
@@ -15,9 +17,7 @@ public interface BaseMapper {
     @Select("select * from jobinfo")
     List<JobInfo> getAllJob();
     @Select("select * from jobinfo where deleteStatus = 0")
-    List<JobInfo> getAllUseful();
-    @Select("select * from jobinfo where name = #{name}")
-    JobInfo getJobByName(String name);
+    List<JobInfo> getAllUsefulJob();
     @Select("select * from jobinfo where uuid = #{uuid}")
     JobInfo getJobById(String uuid);
     @Update("update jobinfo set lastRunTime = #{lastRunTime} where uuid = #{uuid}")
@@ -42,12 +42,12 @@ public interface BaseMapper {
     boolean addResult(JobResult jobResult);
     @Select("select * from jobresult")
     List<JobResult> getAllResult();
-    @Select("select * from jobresult where name = #{name}")
-    JobResult getResult(String name);
+    @Select("select * from jobresult where deleteStatus = 0")
+    List<JobResult> getAllUsefulResult();
     @Update("update jobresult set jobStatus = #{jobStatus} where uuid = #{uuid}")
     boolean setStatus(@Param("jobStatus")int jobStatus, @Param("uuid")String uuid);
-    @Select("select jobStatus from jobresult where uuid = #{uuid}")
-    int getStatus(String uuid);
+    @Update("update jobresult set failureTimes = #{failureTimes} where uuid = #{uuid}")
+    void setFailureTimes(int failureTimes, String uuid);
     @Update("update jobresult set result = #{result}, jobStatus = #{jobStatus}, startTime = #{startTime}, " +
             "finishTime = #{finishTime}, nodeId = #{nodeId}, failureTimes = #{failureTimes} where uuid = #{uuid}")
     boolean updateResult(JobResult jobResult);

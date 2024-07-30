@@ -41,12 +41,4 @@ public class ResultController {
             return Result.failure(CodeEnum.ERR);
         return Result.success(CodeEnum.SUCCESS);
     }
-    @RequestMapping("/getJobResultByName")
-    public Result<Object> getJobResultByName(@RequestBody Map<String, String> map) {
-        String name = map.get("name");
-        JobResult jobResult = masterNode.getJobResultByName(name);
-        if (jobResult == null)
-            return Result.failure(CodeEnum.ERR);
-        return Result.success(jobResult);
-    }
 }

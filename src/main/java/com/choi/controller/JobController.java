@@ -41,8 +41,12 @@ public class JobController {
     @RequestMapping("/deleteJob")
     public Result<Object> deleteJob(@RequestBody Map<String, String> map) {
         String name = map.get("name");
-        if (masterNode.deleteJob(name)) {
-            return Result.success(CodeEnum.DELETE_JOB_SUCCESS);
+        try {
+            if (masterNode.deleteJob(name)) {
+                return Result.success(CodeEnum.DELETE_JOB_SUCCESS);
+            }
+        } catch (MyException e) {
+            e.printStackTrace();
         }
         return Result.failure(CodeEnum.DELETE_JOB_ERR);
     }

@@ -30,8 +30,7 @@ spring:
         max-idle: 4
         min-idle: 0
         max-wait: -1
-
-#mybatis:
-#  type-aliases-package: com.choi.pojo
+#mybatis-plus:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+

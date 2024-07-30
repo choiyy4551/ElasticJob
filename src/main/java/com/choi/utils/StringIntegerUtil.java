@@ -1,9 +1,7 @@
 package com.choi.utils;
 
-import org.springframework.stereotype.Component;
 
-
-public class StringAndInteger {
+public class StringIntegerUtil {
     public static Integer StringToInteger(String s) {
         return Integer.parseInt(s);
     }

@@ -1,12 +1,14 @@
 package com.choi.service.client;
 
 import com.choi.grpc.*;
-import com.choi.mapper.JobMapper;
+import com.choi.mapper.DB1Mapper;
+import com.choi.mapper.DB2Mapper;
+import com.choi.mapper.DB3Mapper;
 import com.choi.pojo.Configuration;
 import com.choi.pojo.JobInfo;
 import com.choi.service.Node;
 import com.choi.utils.MyUUID;
-import com.choi.utils.StringAndInteger;
+import com.choi.utils.StringIntegerUtil;
 import io.grpc.StatusRuntimeException;
 import lombok.Data;
 import java.lang.Object;
@@ -25,11 +27,15 @@ import java.util.concurrent.BlockingQueue;
 public class SlaveNode {
     private Configuration configuration;
     @Autowired
+    private DB1Mapper db1Mapper;
+    @Autowired
+    private DB2Mapper db2Mapper;
+    @Autowired
+    private DB3Mapper db3Mapper;
+    @Autowired
     private MyUUID myUUID;
     @Autowired
     private SlaveStub slaveStub;
-    @Autowired
-    private JobMapper jobMapper;
     @Autowired
     private JedisCluster jedisCluster;
     @Qualifier("taskExecutor")
@@ -45,6 +51,7 @@ public class SlaveNode {
     private String clusterName;
     //用来存储上一个主节点host，判断主节点是否发生改变
     private String host;
+
     public void start(BlockingQueue<JobInfo> queue, Node node) {
         System.out.println("我是打工人！！！！！！！！！！！！！！！！！！！！！！！！！！");
         shutDown = false;
@@ -110,6 +117,7 @@ public class SlaveNode {
         }
         return null;
     }
+
     private boolean register() {
         String resource = node.getConfiguration().getResources();
         String maxParallel = node.getConfiguration().getResources();
@@ -167,6 +175,7 @@ public class SlaveNode {
         }
         return false;
     }
+
     private boolean deregister() {
         if (slaveStub.isShutDown()) {
             return true;
@@ -214,7 +223,7 @@ public class SlaveNode {
 
     private List<JobInfo> getJob() {
         JobRequest jobRequest = JobRequest.newBuilder().setNodeId(node.getNodeId()).setResource(node.getConfiguration().getResources())
-                .setParallelJobNum(StringAndInteger.IntegerToString(node.getConfiguration().getMaxParallel())).build();
+                .setParallelJobNum(StringIntegerUtil.IntegerToString(node.getConfiguration().getMaxParallel())).build();
         JobReply jobReply;
         List<JobInfo> jobInfoList = new ArrayList<>();
         String host = jedisCluster.get("host");
@@ -260,13 +269,27 @@ public class SlaveNode {
             List<GrpcJobInfo> grpcJobInfoList = jobReply.getGrpcJobList().getGrpcJobInfoList();
             for (GrpcJobInfo grpcJobInfo : grpcJobInfoList) {
                 String uuid = grpcJobInfo.getId();
-                JobInfo jobById = jobMapper.getJobById(uuid);
-                jobInfoList.add(jobById);
-                System.out.println(jobById);
+                int id = StringIntegerUtil.StringToInteger(uuid);
+                System.out.println("uuid" + uuid);
+                JobInfo jobInfo = null;
+                switch (id % 3) {
+                    case 0:
+                        jobInfo = db1Mapper.getJobById(uuid);
+                        break;
+                    case 1:
+                        jobInfo = db2Mapper.getJobById(uuid);
+                        break;
+                    case 2:
+                        jobInfo = db3Mapper.getJobById(uuid);
+                        break;
+                }
+                jobInfoList.add(jobInfo);
+                System.out.println(jobInfo);
             }
         }
         return jobInfoList;
     }
+
     public boolean addJob(JobInfo jobInfo) {
         AddJobRequest addJobRequest = AddJobRequest.newBuilder().setName(jobInfo.getName()).setParam(jobInfo.getParam())
                 .setScheduleType(jobInfo.getScheduleType()).setScheduleParam(jobInfo.getScheduleParam()).build();
@@ -302,6 +325,7 @@ public class SlaveNode {
         }
         return false;
     }
+
     class Producer implements Runnable {
         private final BlockingQueue<JobInfo> queue;
         public Producer(BlockingQueue<JobInfo> queue) {

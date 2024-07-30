@@ -1,31 +1,40 @@
 package com.choi.service.server;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.choi.Enums.JobStatusEnum;
+import com.choi.Exception.MyException;
 import com.choi.mapper.*;
 import com.choi.pojo.*;
+import com.choi.service.common.BaseOperations;
+import com.choi.service.common.Operations;
+import com.choi.utils.DBChooseUtil;
 import com.choi.utils.DateUtil;
-import com.choi.utils.MyUUID;
 import com.choi.utils.ScheduleTime;
-import com.choi.utils.StringAndInteger;
+import com.choi.utils.StringIntegerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 
 @Component
 public class MasterJobHandler {
     @Autowired
-    private JobMapper jobMapper;
+    private DB1Mapper db1Mapper;
     @Autowired
-    private JobResultMapper jobResultMapper;
+    private DB2Mapper db2Mapper;
+    @Autowired
+    private DB3Mapper db3Mapper;
+    @Autowired
+    private DBChooseUtil dbChooseUtil;
     @Qualifier("taskExecutor")
     @Autowired
     private ThreadPoolTaskExecutor taskExecutor;
     @Autowired
     private ScheduleTime scheduleTime;
-    @Autowired
-    private MyUUID myUUID;
     private boolean shutDown = true;
     private int runningJobSize = 0;
     private final List<JobTimeInfo> runningJob = new ArrayList<>();
@@ -45,22 +54,24 @@ public class MasterJobHandler {
         //设置shutdown回收线程
         shutDown = true;
     }
+
     public void initJob() {
         //只有启动时从数据库中重新读取一遍任务
-        List<JobInfo> jobInfoList = jobMapper.getAllUseful();
+        List<JobInfo> jobInfoList = getAllUsefulJob();
         if (jobInfoList.isEmpty()) {
             System.out.println("数据库中没有剩余任务");
             return;
         }
-        List<JobResult> jobResultList = jobResultMapper.getAllJobResult();
+        List<JobResult> jobResultList = getAllUsefulResult();
         for (JobResult jobResult : jobResultList) {
             jobResultMap.put(jobResult.getUuid(), jobResult);
         }
         for (JobInfo jobinfo : jobInfoList) {
-            if (jobTimes.containsKey(jobinfo.getUuid()))
+            String uuid = jobinfo.getUuid();
+            if (jobTimes.containsKey(uuid))
                 continue;
             JobTimeInfo jobTimeInfo = createJobTimeInfo(jobinfo);
-            jobTimes.put(jobinfo.getUuid(), jobTimeInfo);
+            jobTimes.put(uuid, jobTimeInfo);
             if (jobinfo.getScheduleType().equals("Daily")) {
                 Date lastRunTime = DateUtil.DateToCST(jobinfo.getLastRunTime());
                 if (lastRunTime != null) {
@@ -74,33 +85,25 @@ public class MasterJobHandler {
                     }
                 }
             }
-            if (jobResultMap.containsKey(jobinfo.getUuid())) {
+            if (jobResultMap.containsKey(uuid)) {
                 //jobResultMap中存在任务说明该任务之前就被写入过，判断任务状态分配队列
-                switch (jobResultMapper.getJobStatus(jobinfo.getUuid())) {
+                switch (jobResultMap.get(uuid).getJobStatus()) {
                     case 3:
-                    case 4: {
+                    case 4:
                         continue;
-                    }
-                    case 5: {
+                    case 5:
                         moveToWaiting(jobTimeInfo);
-                    }
-                    break;
-                    case 6: {
+                        break;
+                    case 6:
                         moveToPrepared(jobTimeInfo);
-                    }
-                    break;
-                    default: {
+                        break;
+                    default:
                         if (runningJobSize > 0 && runningJob.size() < runningJobSize)
                             moveToRunning(jobTimeInfo);
                         else
                             moveToPrepared(jobTimeInfo);
-                    }
                 }
             } else {
-                JobResult jobResult = new JobResult();
-                jobResult.setUuid(jobinfo.getUuid());
-                jobResult.setName(jobinfo.getName());
-                jobResultMapper.addResult(jobResult);
                 moveToWaiting(jobTimeInfo);
             }
         }
@@ -122,23 +125,26 @@ public class MasterJobHandler {
         for (int i = 0; i < runningJob.size(); i++) {
             JobTimeInfo jobTimeInfo = runningJob.get(i);
             String uuid = jobTimeInfo.getJobInfo().getUuid();
-            switch (jobResultMapper.getJobStatus(uuid)) {
+            int id = StringIntegerUtil.StringToInteger(uuid);
+            BaseOperations baseOperations = dbChooseUtil.getDB(id);
+            JobResult jobResult = baseOperations.getJobResult(uuid);
+            switch (jobResult.getJobStatus()) {
                 //查询到之前一次到任务执行失败，尝试重做
                 case 4: {
-                    JobResult jobResult = jobResultMapper.getJobResultById(uuid);
                     int failureTimes = jobResult.getFailureTimes();
                     failureTimes += 1;
-                    if (failureTimes <= 3)
+                    if (failureTimes <= 3) {
                         //log 重做次数小于等于3则继续重做
+                        setFailureTimes(jobResult, failureTimes);
                         moveToWaiting(jobTimeInfo);
-                    else {
+                    } else {
                         //log 重做大于3次，最终落库状态为失败
                         jobResultMap.remove(uuid);
                         jobTimes.remove(uuid);
-                        runningJob.remove(i);
                         System.out.println("任务执行完成移出队列");
                         i--;
                     }
+                    runningJob.remove(i);
                     break;
                 }
                 case 3: {
@@ -154,65 +160,126 @@ public class MasterJobHandler {
             }
         }
     }
-    public void moveToPrepared(JobTimeInfo jobTimeInfo) {
+
+    private void moveToPrepared(JobTimeInfo jobTimeInfo) {
         System.out.println("任务 " + jobTimeInfo.getJobInfo().getName() + " 添加到准备队列" + "执行时间为" + jobTimeInfo.getRunTime());
         preparedJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Prepared);
-        jobResultMapper.setJobStatus(JobStatusEnum.Prepared.getValue(), jobTimeInfo.getJobInfo().getUuid());
+        setJobStatus(JobStatusEnum.Prepared.getValue(), jobTimeInfo.getJobInfo().getUuid());
     }
 
-    public void moveToRunning(JobTimeInfo jobTimeInfo) {
+    private void moveToRunning(JobTimeInfo jobTimeInfo) {
         System.out.println("任务 " + jobTimeInfo.getJobInfo().getName() + " 添加到运行队列" + "执行时间为" + jobTimeInfo.getRunTime());
         runningJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Pending);
-        jobResultMapper.setJobStatus(JobStatusEnum.Pending.getValue(), jobTimeInfo.getJobInfo().getUuid());
+        setJobStatus(JobStatusEnum.Pending.getValue(), jobTimeInfo.getJobInfo().getUuid());
     }
 
-    public void moveToWaiting(JobTimeInfo jobTimeInfo) {
+    private void moveToWaiting(JobTimeInfo jobTimeInfo) {
         System.out.println("任务 " + jobTimeInfo.getJobInfo().getName() + " 添加到等待队列" + "执行时间为" + jobTimeInfo.getRunTime());
         waitingJob.add(jobTimeInfo);
         jobTimeInfo.setStatus(JobStatusEnum.Waiting);
-        jobResultMapper.setJobStatus(JobStatusEnum.Waiting.getValue(), jobTimeInfo.getJobInfo().getUuid());
+        setJobStatus(JobStatusEnum.Waiting.getValue(), jobTimeInfo.getJobInfo().getUuid());
     }
 
-    public void addJob(JobInfo jobInfo) {
-        String name = jobInfo.getName();
-        JobInfo job = jobMapper.getJobByName(name);
-        //数据库中存在任务，则更新
-        if (job != null) {
-            System.out.println("任务已存在！");
-            jobInfo.setUuid(job.getUuid());
-            jobInfo.setLastRunTime(job.getLastRunTime());
-            jobMapper.updateJobInfo(jobInfo);
-            //所有队列中都不存在该任务则加入
-            if (!jobTimes.containsKey(jobInfo.getUuid())) {
-                JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
-                jobTimes.put(jobInfo.getUuid(), jobTimeInfo);
-                moveToWaiting(jobTimeInfo);
-            }
-        } else {
-            String jobId = myUUID.createUUID();
-            jobInfo.setUuid(jobId);
-            JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
-            jobInfo.setRunTime(DateUtil.CSTToDate(jobTimeInfo.getRunTime().toString()));
-            System.out.println(jobInfo.getRunTime());
-            boolean res = jobMapper.addJobInfo(jobInfo);
-            if (!res) {
-                System.out.println("任务添加失败，数据库异常！");
-            }
-            jobTimes.put(jobInfo.getUuid(), jobTimeInfo);
-            JobResult jobResult = new JobResult();
-            jobResult.setUuid(jobInfo.getUuid());
-            jobResult.setName(jobInfo.getName());
-            jobResultMapper.addResult(jobResult);
-            moveToWaiting(jobTimeInfo);
-            System.out.println("任务添加成功！");
+    private void setJobStatus(int status, String uuid) {
+        int id = StringIntegerUtil.StringToInteger(uuid);
+        switch (id % 3) {
+            case 0:
+                db1Mapper.setStatus(status, uuid);
+                break;
+            case 1:
+                db2Mapper.setStatus(status, uuid);
+                break;
+            case 2:
+                db3Mapper.setStatus(status, uuid);
+                break;
         }
+    }
+
+    public boolean addJob(JobInfo jobInfo) throws MyException {
+        String uuid = jobInfo.getUuid();
+        int id = StringIntegerUtil.StringToInteger(uuid);
+        JobResult jobResult = new JobResult();
+        jobResult.setUuid(uuid);
+        jobResult.setName(jobInfo.getName());
+        JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
+        jobTimes.put(uuid, jobTimeInfo);
+        jobInfo.setRunTime(DateUtil.CSTToDate(jobTimeInfo.getRunTime().toString()));
+        moveToWaiting(jobTimeInfo);
+        BaseOperations baseOperations = dbChooseUtil.getDB(id);
+        return baseOperations.addJob(jobInfo, jobResult);
+    }
+
+    public boolean updateJobInfo(JobInfo jobInfo) {
+        String uuid = jobInfo.getUuid();
+        int id = StringIntegerUtil.StringToInteger(uuid);
+        //任务还未被加入任何队列，添加至waiting
+        if (!jobTimes.containsKey(uuid)) {
+            JobTimeInfo jobTimeInfo = createJobTimeInfo(jobInfo);
+            jobTimes.put(uuid, jobTimeInfo);
+            moveToWaiting(jobTimeInfo);
+        }
+        switch (id % 3) {
+            case 0:
+                return db1Mapper.updateJobInfo(jobInfo);
+            case 1:
+                return db2Mapper.updateJobInfo(jobInfo);
+            case 2:
+                return db3Mapper.updateJobInfo(jobInfo);
+            default:
+                return false;
+        }
+    }
+
+    private List<JobInfo> getAllUsefulJob() {
+        List<JobInfo> db1Jobs = db1Mapper.getAllUsefulJob();
+        List<JobInfo> db2Jobs = db2Mapper.getAllUsefulJob();
+        List<JobInfo> db3Jobs = db3Mapper.getAllUsefulJob();
+        List<JobInfo> results = new ArrayList<>();
+        results.addAll(db1Jobs);
+        results.addAll(db2Jobs);
+        results.addAll(db3Jobs);
+        return results;
+    }
+
+    private List<JobResult> getAllUsefulResult() {
+        List<JobResult> db1result = db1Mapper.getAllUsefulResult();
+        List<JobResult> db2result = db2Mapper.getAllUsefulResult();
+        List<JobResult> db3result = db3Mapper.getAllUsefulResult();
+        List<JobResult> results = new ArrayList<>();
+        results.addAll(db1result);
+        results.addAll(db2result);
+        results.addAll(db3result);
+        return results;
+    }
+
+    private void setFailureTimes(JobResult jobResult, int failureTimes) {
+        String uuid = jobResult.getUuid();
+        int id = StringIntegerUtil.StringToInteger(uuid);
+        switch (id % 3) {
+            case 0:
+                db1Mapper.setFailureTimes(failureTimes, uuid);
+                break;
+            case 1:
+                db2Mapper.setFailureTimes(failureTimes, uuid);
+                break;
+            case 2:
+                db3Mapper.setFailureTimes(failureTimes, uuid);
+                break;
+        }
+    }
+
+    public int getJobStatus(String uuid) {
+        int id = StringIntegerUtil.StringToInteger(uuid);
+        BaseOperations baseOperations = dbChooseUtil.getDB(id);
+        JobResult jobResult = baseOperations.getJobResult(uuid);
+        return jobResult == null ? -1 : jobResult.getJobStatus();
     }
 
     public List<JobInfo> divideJob(String resources, String maxParallel) {
         int count = 0;
-        int restResources = StringAndInteger.StringToInteger(resources);
+        int restResources = StringIntegerUtil.StringToInteger(resources);
         List<JobInfo> jobInfos = new ArrayList<>();
         while (count < Integer.parseInt(maxParallel)) {
             if (preparedJob.isEmpty()) {
@@ -220,7 +287,7 @@ public class MasterJobHandler {
             }
             JobTimeInfo jobTimeInfo = preparedJob.get(0);
             JobInfo jobInfo = jobTimeInfo.getJobInfo();
-            int param = StringAndInteger.StringToInteger(jobInfo.getParam());
+            int param = StringIntegerUtil.StringToInteger(jobInfo.getParam());
             if (restResources > param) {
                 restResources -= param;
                 jobInfos.add(jobInfo);
@@ -233,6 +300,7 @@ public class MasterJobHandler {
         }
         return jobInfos;
     }
+
     private JobTimeInfo createJobTimeInfo(JobInfo jobInfo) {
         JobTimeInfo jobTimeInfo = new JobTimeInfo();
         jobTimeInfo.setJobInfo(jobInfo);
@@ -242,14 +310,17 @@ public class MasterJobHandler {
             jobTimeInfo.setRunTime(DateUtil.DateToCST(jobInfo.getRunTime()));
         return jobTimeInfo;
     }
+
     public void addRunningJobSize(int maxParallel) {
         System.out.println("子节点增加");
         runningJobSize += maxParallel;
     }
+
     public void minusRunningJobSize(int maxParallel) {
         System.out.println("子节点减少");
         runningJobSize -= maxParallel;
     }
+
     class changeJob implements Runnable {
         @Override
         public void run() {
