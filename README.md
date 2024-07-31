@@ -43,6 +43,6 @@
 #### 5.节点间通信
   主从节点间通信采用的是gRPC服务，考虑到gRPC优秀的性能而且可以使用Protobuf自动生成客户端和服务器端代码。
 ## 架构图
-![_20240731115630.png](https://s2.loli.net/2024/07/31/duFc7AT3hIES5eM.png)
+![_20240731120125.png](https://s2.loli.net/2024/07/31/kVWp6LGbPSUnfzD.png)
 ## 项目结构树   
 ![_20240731115823.png](https://s2.loli.net/2024/07/31/ZYxGrSPaN4XLTtR.png)
