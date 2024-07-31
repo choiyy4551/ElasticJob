@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum CodeEnum {
     ADD_JOB_SUCCESS(1001, "添加任务成功"),
     ADD_JOB_ERR(1002, "添加任务失败"),
-    SUCCESS(1,"成功"),
+    SUCCESS(1, "成功"),
     ERR(2, "失败"),
     DELETE_JOB_SUCCESS(1003, "删除成功"),
     DELETE_JOB_ERR(1004, "删除失败"),

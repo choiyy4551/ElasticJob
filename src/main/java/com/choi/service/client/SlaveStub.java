@@ -17,7 +17,7 @@ public class SlaveStub {
         shutDown = false;
         String ip = host.substring(0, host.indexOf(":"));
         Integer port = StringIntegerUtil.StringToInteger(host.substring(host.indexOf(":") +1));
-        channel = ManagedChannelBuilder.forAddress(ip, 4551)
+        channel = ManagedChannelBuilder.forAddress(ip, port)
                 .usePlaintext()
                 .build();
         return ElasticJobServiceGrpc.newBlockingStub(channel);

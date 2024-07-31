@@ -9,7 +9,6 @@ import com.choi.pojo.*;
 import com.choi.pojo.JobInfo;
 import com.choi.Exception.MyException;
 import com.choi.service.common.BaseOperations;
-import com.choi.service.common.Operations;
 import com.choi.utils.DBChooseUtil;
 import com.choi.utils.MyUUID;
 import com.choi.utils.ScheduleTime;
@@ -24,7 +23,7 @@ import redis.clients.jedis.JedisCluster;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -108,14 +107,15 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
     @Override
     public boolean stopJob(String name) throws MyException {
         int id = getJobId(name);
-        if (id == -1)
+        if (id == -1) {
             return false;
+        }
         BaseOperations baseOperations = dbChooseUtil.getDB(id);
         return baseOperations.stopJob(name);
     }
 
     @Override
-    public boolean deleteJob(String name) throws MyException{
+    public boolean deleteJob(String name) throws MyException {
         int id = getJobId(name);
         if (id == -1) {
             System.out.println("删除任务失败，不存在该任务!");
@@ -134,8 +134,7 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         jobs.addAll(db1Jobs);
         jobs.addAll(db2Jobs);
         jobs.addAll(db3Jobs);
-        jobs.sort((a, b) -> StringIntegerUtil.StringToInteger(a.getUuid())
-                - StringIntegerUtil.StringToInteger(b.getUuid()));
+        jobs.sort(Comparator.comparingInt(a -> StringIntegerUtil.StringToInteger(a.getUuid())));
         return jobs;
     }
 
@@ -148,16 +147,16 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
         results.addAll(db1Results);
         results.addAll(db2Results);
         results.addAll(db3Results);
-        results.sort((a, b) -> StringIntegerUtil.StringToInteger(a.getUuid())
-                - StringIntegerUtil.StringToInteger(b.getUuid()));
+        results.sort(Comparator.comparingInt(a -> StringIntegerUtil.StringToInteger(a.getUuid())));
         return results;
     }
 
     @Override
     public JobResult getJobResult(String name) {
         int id = getJobId(name);
-        if (id == -1)
+        if (id == -1) {
             return null;
+        }
         String uuid = StringIntegerUtil.IntegerToString(id);
         BaseOperations baseOperations = dbChooseUtil.getDB(id);
         return baseOperations.getJobResult(uuid);
@@ -181,8 +180,9 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
 
     private int getJobId(String name) {
         Sequence sequence = db1Mapper.getSequence(name);
-        if (sequence == null)
+        if (sequence == null) {
             return -1;
+        }
         return sequence.getId();
     }
 
@@ -354,10 +354,11 @@ public class MasterNode extends ElasticJobServiceGrpc.ElasticJobServiceImplBase 
             jobInfo.setParam(param);
             jobInfo.setScheduleType(scheduleType);
             jobInfo.setScheduleParam(scheduleParam);
-            if (MasterNode.this.addJob(jobInfo))
+            if (MasterNode.this.addJob(jobInfo)) {
                 errorCode = ErrorCode.newBuilder().setCode("Success").setMessage("addJob successfully").build();
-            else
+            } else {
                 errorCode = ErrorCode.newBuilder().setCode("Err").setMessage("addJob error").build();
+            }
             addJobReply = AddJobReply.newBuilder().setErr(errorCode).build();
             responseObserver.onNext(addJobReply);
             responseObserver.onCompleted();

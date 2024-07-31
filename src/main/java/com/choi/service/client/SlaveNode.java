@@ -11,7 +11,6 @@ import com.choi.utils.MyUUID;
 import com.choi.utils.StringIntegerUtil;
 import io.grpc.StatusRuntimeException;
 import lombok.Data;
-import java.lang.Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -125,8 +124,9 @@ public class SlaveNode {
                 .setResources(resource).setMaxParallel(maxParallel).build();
         RegisterNodeReply registerNodeReply;
         String host = jedisCluster.get("host");
-        if (host.equals(this.host) && !host.isEmpty())
+        if (host.equals(this.host) && !host.isEmpty()) {
             return true;
+        }
         this.host = host;
         slaveStub.shutDown();
         stub = slaveStub.getBlockingStub(host);
@@ -281,6 +281,8 @@ public class SlaveNode {
                         break;
                     case 2:
                         jobInfo = db3Mapper.getJobById(uuid);
+                        break;
+                    default:
                         break;
                 }
                 jobInfoList.add(jobInfo);

@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.BlockingQueue;
 
 @Component
-public class SlaveJobHandler implements SlaveService{
+public class SlaveJobHandler implements SlaveService {
     @Autowired
     private DB1Mapper db1Mapper;
     @Autowired
@@ -53,7 +53,7 @@ public class SlaveJobHandler implements SlaveService{
     }
 
     private void setStartTime(JobResult jobResult) {
-        jobResult.setStartTime(DateUtil.CSTToDate(scheduleTime.Now().toString()));
+        jobResult.setStartTime(DateUtil.CSTToDate(scheduleTime.now().toString()));
         jobResult.setJobStatus(JobStatusEnum.Doing.getValue());
         String uuid = jobResult.getUuid();
         int id = StringIntegerUtil.StringToInteger(uuid);
@@ -67,11 +67,13 @@ public class SlaveJobHandler implements SlaveService{
             case 2:
                 db3Mapper.setStatus(JobStatusEnum.Doing.getValue(), jobResult.getUuid());
                 break;
+            default:
+                break;
         }
     }
 
     private void setFinishTime(JobResult jobResult) {
-        jobResult.setFinishTime(DateUtil.CSTToDate(scheduleTime.Now().toString()));
+        jobResult.setFinishTime(DateUtil.CSTToDate(scheduleTime.now().toString()));
     }
 
     private void deleteJudge(JobInfo jobInfo) {
@@ -115,13 +117,14 @@ public class SlaveJobHandler implements SlaveService{
                     setStartTime(jobResult);
                     //log
                     jobResult.setNodeId(nodeId);
-                    if (runJob(jobInfo))
+                    if (runJob(jobInfo)) {
                         jobResult.setJobStatus(JobStatusEnum.Success.getValue());
-                    else
+                    } else {
                         jobResult.setJobStatus(JobStatusEnum.Failed.getValue());
+                    }
                     setFinishTime(jobResult);
                     jobResult.setResult("success");
-                    jobInfo.setLastRunTime(scheduleTime.Now().toString());
+                    jobInfo.setLastRunTime(scheduleTime.now().toString());
                     String date = DateUtil.CSTToDate(jobInfo.getLastRunTime());
                     switch (id % 3) {
                         case 0:
@@ -135,6 +138,8 @@ public class SlaveJobHandler implements SlaveService{
                         case 2:
                             db3Mapper.setLastRunTime(date, uuid);
                             db3Mapper.updateResult(jobResult);
+                            break;
+                        default:
                             break;
                     }
                     //run完之后判断任务的类型，看看是否要被删除

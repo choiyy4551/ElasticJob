@@ -4,6 +4,6 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import org.springframework.stereotype.Service;
 
 @Service
-@DS("db2")
-public class db2OperationsImpl extends BaseOperations{
+@DS("db3")
+public class DB3OperationsImpl extends BaseOperations{
 }

@@ -1,7 +1,6 @@
 package com.choi.pojo;
 
 import com.choi.Enums.CodeEnum;
-import com.google.rpc.Code;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

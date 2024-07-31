@@ -29,16 +29,18 @@ public class ResultController {
     public Result<Object> getJobResult(@RequestBody Map<String, String> map) {
         String name = map.get("name");
         JobResult jobResult = masterNode.getJobResult(name);
-        if (jobResult == null)
+        if (jobResult == null) {
             return Result.failure(CodeEnum.ERR);
+        }
         return Result.success(jobResult);
     }
     @RequestMapping("/getJobStatus")
     public Result<Object> getJobStatus(@RequestBody Map<String, String> map) {
         String name = map.get("name");
         int jobStatus = masterNode.getJobStatus(name);
-        if (jobStatus == -1)
+        if (jobStatus == -1) {
             return Result.failure(CodeEnum.ERR);
+        }
         return Result.success(CodeEnum.SUCCESS);
     }
 }

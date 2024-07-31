@@ -1,12 +1,13 @@
 package com.choi.service.server;
-
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.choi.Enums.JobStatusEnum;
 import com.choi.Exception.MyException;
-import com.choi.mapper.*;
-import com.choi.pojo.*;
+import com.choi.mapper.DB1Mapper;
+import com.choi.mapper.DB2Mapper;
+import com.choi.mapper.DB3Mapper;
+import com.choi.pojo.JobInfo;
+import com.choi.pojo.JobResult;
+import com.choi.pojo.JobTimeInfo;
 import com.choi.service.common.BaseOperations;
-import com.choi.service.common.Operations;
 import com.choi.utils.DBChooseUtil;
 import com.choi.utils.DateUtil;
 import com.choi.utils.ScheduleTime;
@@ -15,10 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
 
 @Component
 public class MasterJobHandler {
@@ -38,15 +38,15 @@ public class MasterJobHandler {
     private boolean shutDown = true;
     private int runningJobSize = 0;
     private final List<JobTimeInfo> runningJob = new ArrayList<>();
-    private final PriorityQueue<JobTimeInfo> waitingJob = new PriorityQueue<>();
     private final List<JobTimeInfo> preparedJob = new ArrayList<>();
-    private final Map<String, JobTimeInfo> jobTimes = new HashMap<>();
-    private final Map<String, JobResult> jobResultMap = new HashMap<>();
+    private final PriorityQueue<JobTimeInfo> waitingJob = new PriorityQueue<>();
+    private final HashMap<String, JobTimeInfo> jobTimes = new HashMap<>();
+    private final HashMap<String, JobResult> jobResultMap = new HashMap<>();
 
     public void start() {
         shutDown = false;
         //开启线程对任务队列分配
-        taskExecutor.submit(this.new changeJob());
+        taskExecutor.submit(this.new ChangeJob());
         initJob();
     }
 
@@ -68,14 +68,15 @@ public class MasterJobHandler {
         }
         for (JobInfo jobinfo : jobInfoList) {
             String uuid = jobinfo.getUuid();
-            if (jobTimes.containsKey(uuid))
+            if (jobTimes.containsKey(uuid)) {
                 continue;
+            }
             JobTimeInfo jobTimeInfo = createJobTimeInfo(jobinfo);
             jobTimes.put(uuid, jobTimeInfo);
             if (jobinfo.getScheduleType().equals("Daily")) {
                 Date lastRunTime = DateUtil.DateToCST(jobinfo.getLastRunTime());
                 if (lastRunTime != null) {
-                    Date date = scheduleTime.GetNextScheduleTime(jobinfo);
+                    Date date = scheduleTime.getNextScheduleTime(jobinfo);
                     long timeDiff = lastRunTime.getTime() - date.getTime();
                     if (timeDiff >= 24 * 60 * 60 * 1000) {
                         //Daily任务相差有一天了，可以重做
@@ -113,7 +114,7 @@ public class MasterJobHandler {
     public void timeCheck() {
         if (!waitingJob.isEmpty()) {
             Date runTime = waitingJob.peek().getRunTime();
-            Date nowTime = scheduleTime.Now();
+            Date nowTime = scheduleTime.now();
             if (runTime.before(nowTime) || runTime.equals(nowTime)) {
                 moveToPrepared(waitingJob.poll());
             }
@@ -194,6 +195,8 @@ public class MasterJobHandler {
             case 2:
                 db3Mapper.setStatus(status, uuid);
                 break;
+            default:
+                break;
         }
     }
 
@@ -267,6 +270,8 @@ public class MasterJobHandler {
             case 2:
                 db3Mapper.setFailureTimes(failureTimes, uuid);
                 break;
+            default:
+                break;
         }
     }
 
@@ -304,10 +309,12 @@ public class MasterJobHandler {
     private JobTimeInfo createJobTimeInfo(JobInfo jobInfo) {
         JobTimeInfo jobTimeInfo = new JobTimeInfo();
         jobTimeInfo.setJobInfo(jobInfo);
-        if (jobInfo.getRunTime() == null || jobInfo.getRunTime().isEmpty())
-            jobTimeInfo.setRunTime(scheduleTime.GetNextScheduleTime(jobInfo));
-        else
+        if (jobInfo.getRunTime() == null || jobInfo.getRunTime().isEmpty()) {
+            jobTimeInfo.setRunTime(scheduleTime.getNextScheduleTime(jobInfo));
+        }
+        else {
             jobTimeInfo.setRunTime(DateUtil.DateToCST(jobInfo.getRunTime()));
+        }
         return jobTimeInfo;
     }
 
@@ -321,7 +328,7 @@ public class MasterJobHandler {
         runningJobSize -= maxParallel;
     }
 
-    class changeJob implements Runnable {
+    class ChangeJob implements Runnable {
         @Override
         public void run() {
             //记得关闭

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * 封装CURD操作
+ */
 @Repository
 public interface BaseMapper {
     @Insert("insert into jobinfo(uuid, name, param,scheduleType, scheduleParam, runTime)" +

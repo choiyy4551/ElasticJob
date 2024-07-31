@@ -7,19 +7,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class DBChooseUtil {
     @Autowired
-    private BaseOperations db1OperationsImpl;
+    private BaseOperations DB1OperationsImpl;
     @Autowired
-    private BaseOperations db2OperationsImpl;
+    private BaseOperations DB2OperationsImpl;
     @Autowired
-    private BaseOperations db3OperationsImpl;
+    private BaseOperations DB3OperationsImpl;
     public BaseOperations getDB(int id) {
         switch (id % 3) {
             case 0:
-                return db1OperationsImpl;
+                return DB1OperationsImpl;
             case 1:
-                return db2OperationsImpl;
+                return DB2OperationsImpl;
             case 2:
-                return db3OperationsImpl;
+                return DB3OperationsImpl;
             default:
                 return null;
         }
