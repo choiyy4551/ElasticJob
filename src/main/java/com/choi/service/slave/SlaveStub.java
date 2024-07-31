@@ -1,4 +1,4 @@
-package com.choi.service.client;
+package com.choi.service.slave;
 
 import com.choi.grpc.ElasticJobServiceGrpc;
 import com.choi.utils.StringIntegerUtil;

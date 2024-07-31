@@ -1,4 +1,4 @@
-package com.choi.service.server;
+package com.choi.service.master;
 
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.JobResult;

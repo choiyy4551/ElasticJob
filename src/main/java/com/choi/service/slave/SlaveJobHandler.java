@@ -1,4 +1,4 @@
-package com.choi.service.client;
+package com.choi.service.slave;
 
 import com.choi.Enums.JobStatusEnum;
 import com.choi.Exception.MyException;

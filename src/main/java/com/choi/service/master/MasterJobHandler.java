@@ -1,4 +1,4 @@
-package com.choi.service.server;
+package com.choi.service.master;
 import com.choi.Enums.JobStatusEnum;
 import com.choi.Exception.MyException;
 import com.choi.mapper.DB1Mapper;

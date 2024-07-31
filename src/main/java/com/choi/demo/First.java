@@ -2,7 +2,7 @@ package com.choi.demo;
 
 import com.choi.pojo.Configuration;
 import com.choi.pojo.JobInfo;
-import com.choi.service.client.SlaveService;
+import com.choi.service.slave.SlaveService;
 import com.choi.utils.StringIntegerUtil;
 import org.springframework.stereotype.Component;
 

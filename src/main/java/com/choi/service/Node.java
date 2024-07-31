@@ -2,9 +2,9 @@ package com.choi.service;
 
 import com.choi.pojo.Configuration;
 import com.choi.pojo.JobInfo;
-import com.choi.service.client.SlaveJobHandler;
-import com.choi.service.client.SlaveNode;
-import com.choi.service.server.MasterNode;
+import com.choi.service.slave.SlaveJobHandler;
+import com.choi.service.slave.SlaveNode;
+import com.choi.service.master.MasterNode;
 import com.choi.utils.MyUUID;
 import lombok.Data;
 import org.redisson.api.RLock;

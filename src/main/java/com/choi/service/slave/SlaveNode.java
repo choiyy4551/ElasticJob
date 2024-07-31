@@ -1,4 +1,4 @@
-package com.choi.service.client;
+package com.choi.service.slave;
 
 import com.choi.grpc.*;
 import com.choi.mapper.DB1Mapper;

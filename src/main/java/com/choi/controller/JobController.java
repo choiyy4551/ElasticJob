@@ -3,7 +3,7 @@ package com.choi.controller;
 import com.choi.Enums.CodeEnum;
 import com.choi.pojo.JobInfo;
 import com.choi.pojo.Result;
-import com.choi.service.server.MasterNode;
+import com.choi.service.master.MasterNode;
 import com.choi.Exception.MyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
