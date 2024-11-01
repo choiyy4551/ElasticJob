@@ -46,3 +46,8 @@
 ![_20240731120125.png](https://s2.loli.net/2024/07/31/kVWp6LGbPSUnfzD.png)
 ## 项目结构树   
 ![_20240731115823.png](https://s2.loli.net/2024/07/31/ZYxGrSPaN4XLTtR.png)
+## 结构图 任务流转图
+[![20241101231035.png](https://i.postimg.cc/PJ72Jc8S/20241101231035.png)](https://postimg.cc/8fhhnZ4v)
+[![20241101232253.png](https://i.postimg.cc/DyQr0Ghw/20241101232253.png)](https://postimg.cc/Vd6rHd5x)
+## 状态图
+[![20241101232350.png](https://i.postimg.cc/rpHW3C1Q/20241101232350.png)](https://postimg.cc/Y41hmFyW)
